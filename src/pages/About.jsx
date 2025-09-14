@@ -10,7 +10,7 @@ export default function About() {
         we believe in celebrating moments, heritage, and timeless beauty.
         <br /><br />
         Our collections are carefully curated to bring you premium pieces
-        crafted with love, elegance, and a touch of Ghanaian tradition.
+        crafted with love, grace, elegance, and a touch of Ghanaian tradition.
       </p>
     </div>
   )
