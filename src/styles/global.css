@@ -1,0 +1,168 @@
+/* Main CSS file for Donna's Jewelry & Accessories */
+/* Using Tailwind CSS with minimal custom styles */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Base layer - Only essential resets and typography */
+@layer base {
+  /* Smooth scrolling for the entire page */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Default font family */
+  body {
+    font-family: 'Inter', sans-serif;
+    @apply text-gray-800 bg-white antialiased;
+  }
+  
+  /* Headings use Playfair Display for elegance */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
+  
+  /* Focus styles for accessibility */
+  *:focus {
+    @apply outline-none;
+  }
+  
+  /* Custom focus ring for better accessibility */
+  .focus-ring:focus {
+    @apply ring-2 ring-gold-primary ring-offset-2;
+  }
+}
+
+/* Components layer - Reusable component classes */
+@layer components {
+  /* Premium button styles */
+  .btn-primary {
+    @apply bg-gold-primary hover:bg-gold-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gold-primary focus:ring-offset-2;
+  }
+  
+  .btn-secondary {
+    @apply border-2 border-gold-primary text-gold-primary hover:bg-gold-primary hover:text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gold-primary focus:ring-offset-2;
+  }
+  
+  /* Premium card styles for jewelry products */
+  .jewelry-card {
+    @apply bg-white rounded-xl shadow-lg hover:shadow-premium border border-gray-100 overflow-hidden transition-all duration-300 hover:scale-105;
+  }
+  
+  /* Premium input styles */
+  .input-premium {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gold-primary focus:border-gold-primary transition-colors duration-200 bg-white;
+  }
+  
+  /* Modal backdrop with premium blur */
+  .modal-backdrop {
+    @apply fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center p-4;
+  }
+  
+  /* Loading spinner with brand colors */
+  .spinner-gold {
+    @apply w-8 h-8 border-3 border-gold-primary border-t-transparent rounded-full animate-spin;
+  }
+  
+  /* Premium gradient backgrounds */
+  .gradient-gold {
+    background: linear-gradient(135deg, #D4AF37 0%, #F4E4BC 100%);
+  }
+  
+  .gradient-blue {
+    background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+  }
+  
+  /* Elegant text shadows for headings */
+  .text-shadow-gold {
+    text-shadow: 0 2px 4px rgba(212, 175, 55, 0.3);
+  }
+  
+  /* Premium border styles */
+  .border-premium {
+    @apply border border-gray-200 hover:border-gold-primary transition-colors duration-200;
+  }
+}
+
+/* Utilities layer - Custom utility classes */
+@layer utilities {
+  /* Custom scrollbar for webkit browsers */
+  .scrollbar-gold::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .scrollbar-gold::-webkit-scrollbar-track {
+    @apply bg-gray-100 rounded-full;
+  }
+  
+  .scrollbar-gold::-webkit-scrollbar-thumb {
+    @apply bg-gold-primary rounded-full;
+  }
+  
+  .scrollbar-gold::-webkit-scrollbar-thumb:hover {
+    @apply bg-gold-600;
+  }
+  
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Aspect ratios for jewelry images */
+  .aspect-jewelry {
+    aspect-ratio: 4/5; /* Portrait orientation for jewelry */
+  }
+  
+  /* Text truncation utilities */
+  .text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .text-truncate-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* Premium glass effect */
+  .glass-effect {
+    @apply bg-white bg-opacity-90 backdrop-blur-sm border border-white border-opacity-20;
+  }
+  
+  /* Animate on scroll utilities */
+  .animate-on-scroll {
+    @apply opacity-0 translate-y-4 transition-all duration-700 ease-out;
+  }
+  
+  .animate-on-scroll.visible {
+    @apply opacity-100 translate-y-0;
+  }
+}
+
+/* Print styles for jewelry care instructions */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    @apply text-black bg-white;
+  }
+  
+  .jewelry-card {
+    @apply shadow-none border border-gray-300;
+  }
+}
