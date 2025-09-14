@@ -1,0 +1,1 @@
+import{j as e}from"./index-B0ip2hOJ.js";function r(){return e.jsxs("div",{className:"min-h-screen flex items-center justify-center bg-gray-50",children:[e.jsx("h1",{className:"text-3xl font-bold text-gold-primary",children:"Admin Panel Placeholder"}),e.jsx("p",{className:"mt-4 text-gray-600",children:"This is where product management will go."})]})}export{r as default};
