@@ -2,9 +2,6 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-<Router basename="/donna-jewelry">
-  {/* routes here */}
-</Router>
 // Layout
 import Layout from './components/layout/Layout.jsx';
 
@@ -81,67 +78,65 @@ class ErrorBoundary extends React.Component {
 // Main App
 const App = () => {
   return (
-    return (
-      <div className="App">
-        <AdminProvider>
-          <ProductProvider>
-            <SearchProvider>
-              <Router basename="/DONNA-JEWELRY">
-                <Layout>
-                  <Suspense
-                    fallback={
-                      <div className="flex items-center justify-center min-h-screen">
-                        <div className="w-8 h-8 border-4 border-gold-primary border-t-transparent rounded-full animate-spin"></div>
-                      </div>
-                    }
-                  >
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/products" element={<Products />} />
-                      {/* Lazy pages */}
-                      <Route path="/product/:id" element={<ProductDetail />} />
-                      <Route path="/admin" element={<Admin />} />
-                      <Route path="/about" element={<About />} />
-                      {/* 404 */}
-                      <Route
-                        path="*"
-                        element={
-                          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                            <div className="text-center max-w-md mx-auto px-6">
-                              <h1 className="text-8xl font-bold text-gold-primary mb-4">404</h1>
-                              <h2 className="text-2xl font-playfair text-gray-800 mb-4">
-                                Page Not Found
-                              </h2>
-                              <p className="text-gray-600 mb-8">
-                                The page you're looking for doesn't exist.
-                              </p>
-                              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <a
-                                  href="/DONNA-JEWELRY/"
-                                  className="bg-gold-primary hover:bg-gold-600 text-white px-6 py-3 rounded-lg"
-                                >
-                                  Go Home
-                                </a>
-                                <a
-                                  href="/DONNA-JEWELRY/products"
-                                  className="border border-gold-primary text-gold-primary hover:bg-gold-primary hover:text-white px-6 py-3 rounded-lg"
-                                >
-                                  Shop Jewelry
-                                </a>
-                              </div>
+    <div className="App">
+      <AdminProvider>
+        <ProductProvider>
+          <SearchProvider>
+            <Router basename="/donna-jewelry">
+              <Layout>
+                <Suspense
+                  fallback={
+                    <div className="flex items-center justify-center min-h-screen">
+                      <div className="w-8 h-8 border-4 border-gold-primary border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  }
+                >
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/products" element={<Products />} />
+                    {/* Lazy pages */}
+                    <Route path="/product/:id" element={<ProductDetail />} />
+                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/about" element={<About />} />
+                    {/* 404 */}
+                    <Route
+                      path="*"
+                      element={
+                        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                          <div className="text-center max-w-md mx-auto px-6">
+                            <h1 className="text-8xl font-bold text-gold-primary mb-4">404</h1>
+                            <h2 className="text-2xl font-playfair text-gray-800 mb-4">
+                              Page Not Found
+                            </h2>
+                            <p className="text-gray-600 mb-8">
+                              The page you're looking for doesn't exist.
+                            </p>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                              <a
+                                href="/donna-jewelry/"
+                                className="bg-gold-primary hover:bg-gold-600 text-white px-6 py-3 rounded-lg"
+                              >
+                                Go Home
+                              </a>
+                              <a
+                                href="/donna-jewelry/products"
+                                className="border border-gold-primary text-gold-primary hover:bg-gold-primary hover:text-white px-6 py-3 rounded-lg"
+                              >
+                                Shop Jewelry
+                              </a>
                             </div>
                           </div>
-                        }
-                      />
-                    </Routes>
-                  </Suspense>
-                </Layout>
-              </Router>
-            </SearchProvider>
-          </ProductProvider>
-        </AdminProvider>
-      </div>
-    );
+                        </div>
+                      }
+                    />
+                  </Routes>
+                </Suspense>
+              </Layout>
+            </Router>
+          </SearchProvider>
+        </ProductProvider>
+      </AdminProvider>
+    </div>
   );
 };
 
@@ -153,3 +148,4 @@ const AppWithErrorBoundary = () => (
 );
 
 export default AppWithErrorBoundary;
+// Compare this snippet from src/components/layout/Layout.jsx:

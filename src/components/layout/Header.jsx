@@ -1,18 +1,32 @@
-import React from 'react';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+
 const Header = () => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "Products", href: "/products" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
+  ];
+
   return (
-    <header className="bg-blue-900 text-white shadow-lg">
-      <div className="container mx-auto px-4 py-6">
-        {/* Logo Section */}
+    <header className="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
+      <div className="container mx-auto px-4 py-4">
+        {/* Logo + Navigation */}
         <div className="flex items-center justify-between">
           {/* Brand Logo */}
           <div className="text-center">
-            <div className="text-yellow-400 text-4xl font-bold mb-1">
+            <motion.div
+              className="text-yellow-400 text-4xl font-bold mb-1"
+              initial={{ rotate: 0 }}
+              animate={{ rotate: 360 }}
+              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+            >
               ∞
-            </div>
-            <h1 className="text-2xl font-bold text-yellow-400">
-              DONNA
-            </h1>
+            </motion.div>
+            <h1 className="text-2xl font-bold text-yellow-400">DONNA</h1>
             <p className="text-sm text-yellow-300 tracking-wide">
               JEWELLERY & ACCESSORIES
             </p>
@@ -20,30 +34,16 @@ const Header = () => {
 
           {/* Navigation Menu */}
           <nav className="hidden md:flex space-x-8">
-            <a 
-              href="/" 
-              className="hover:text-yellow-400 transition-colors duration-300"
-            >
-              Home
-            </a>
-            <a 
-              href="/products" 
-              className="hover:text-yellow-400 transition-colors duration-300"
-            >
-              Products
-            </a>
-            <a 
-              href="/about" 
-              className="hover:text-yellow-400 transition-colors duration-300"
-            >
-              About
-            </a>
-            <a 
-              href="/contact" 
-              className="hover:text-yellow-400 transition-colors duration-300"
-            >
-              Contact
-            </a>
+            {navLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                className="relative group transition-colors duration-300"
+              >
+                {link.name}
+                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-yellow-400 transition-all duration-300 group-hover:w-full"></span>
+              </a>
+            ))}
           </nav>
 
           {/* Contact Info */}
@@ -54,22 +54,71 @@ const Header = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button className="md:hidden text-yellow-400">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="md:hidden text-yellow-400 focus:outline-none"
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? (
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            ) : (
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            )}
           </button>
         </div>
 
-        {/* Mobile Menu (Hidden by default) */}
-        <nav className="md:hidden mt-4 pt-4 border-t border-blue-800">
-          <div className="flex flex-col space-y-2">
-            <a href="/" className="hover:text-yellow-400 py-2">Home</a>
-            <a href="/products" className="hover:text-yellow-400 py-2">Products</a>
-            <a href="/about" className="hover:text-yellow-400 py-2">About</a>
-            <a href="/contact" className="hover:text-yellow-400 py-2">Contact</a>
-          </div>
-        </nav>
+        {/* Mobile Menu */}
+        {mobileOpen && (
+          <motion.nav
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden mt-4 pt-4 border-t border-blue-800"
+          >
+            <div className="flex flex-col space-y-3">
+              {navLinks.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className="hover:text-yellow-400 transition-colors duration-300"
+                >
+                  {link.name}
+                </a>
+              ))}
+              <div className="pt-3 border-t border-blue-800 text-yellow-300">
+                <p className="text-sm">Contact us:</p>
+                <p className="text-yellow-400 font-semibold">
+                  +233 24 862 8880
+                </p>
+                <p className="text-sm">@donna_accessoriess</p>
+              </div>
+            </div>
+          </motion.nav>
+        )}
       </div>
     </header>
   );
