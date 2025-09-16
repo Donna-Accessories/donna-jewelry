@@ -27,8 +27,15 @@ import { usePagination } from '../hooks/usePagination.js';
  * - WhatsApp integration for inquiries
  */
 const Products = () => {
-  const { products, loading, error, categories } = useProducts();
-  const { searchTerm, setSearchTerm, filters, setFilters, sortBy, setSortBy } = useSearch();
+  const { products = [], loading = false, error = null, categories = [] } = useProducts() || {};
+  const {
+    searchTerm = '',
+    setSearchTerm = () => {},
+    filters = {},
+    setFilters = () => {},
+    sortBy = '',
+    setSortBy = () => {},
+  } = useSearch() || {};
   
   // Local state for UI controls
   const [showFilters, setShowFilters] = useState(false);
@@ -40,7 +47,7 @@ const Products = () => {
 
   // Filter and sort products based on current criteria
   const filteredProducts = useMemo(() => {
-    if (!products?.length) return [];
+    if (!Array.isArray(products) || products.length === 0) return [];
 
     let filtered = [...products];
 
@@ -56,14 +63,14 @@ const Products = () => {
     }
 
     // Apply category filter
-    if (filters.category && filters.category !== 'all') {
+    if (filters && filters.category && filters.category !== 'all') {
       filtered = filtered.filter(product => 
         product.category?.toLowerCase() === filters.category.toLowerCase()
       );
     }
 
     // Apply price range filter
-    if (filters.minPrice || filters.maxPrice) {
+    if (filters && (filters.minPrice || filters.maxPrice)) {
       filtered = filtered.filter(product => {
         // Extract numeric price from string (e.g., "$1,299" -> 1299)
         const price = parseFloat(product.price?.replace(/[$,]/g, '') || '0');
@@ -74,7 +81,7 @@ const Products = () => {
     }
 
     // Apply in-stock filter
-    if (filters.inStock) {
+    if (filters && filters.inStock) {
       filtered = filtered.filter(product => product.inStock === true);
     }
 
@@ -135,7 +142,7 @@ const Products = () => {
 
   // Calculate price range from products
   useEffect(() => {
-    if (products?.length > 0) {
+    if (Array.isArray(products) && products.length > 0) {
       const prices = products.map(p => parseFloat(p.price?.replace(/[$,]/g, '') || '0'));
       const minPrice = Math.min(...prices);
       const maxPrice = Math.max(...prices);
