@@ -199,4 +199,6 @@ const ProductProvider = ({ children }) => {
   return <ProductContext.Provider value={contextValue}>{children}</ProductContext.Provider>;
 };
 
+// Export both named and default
+export { ProductProvider };
 export default ProductProvider;
