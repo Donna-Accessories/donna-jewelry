@@ -1,7 +1,7 @@
 // src/utils/constants.js
 
 // WhatsApp contact number (use international format, no +)
-export const WHATSAPP_NUMBER = "233200645732"
+export const WHATSAPP_NUMBER = "+233248628880"
 
 // Fallback products file (if GitHub fetch fails)
 export const LOCAL_PRODUCTS_PATH = "/data/products.json"
