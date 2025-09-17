@@ -1,8 +1,13 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
-  base: '/donna-jewelry', // Set to '/<repo-name>/' for GitHub Pages
+  base: "/donna-jewelry/", // IMPORTANT: trailing slash required for GitHub Pages
   plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+    },
+  },
 });
-// If you are deploying to a custom domain, you can set base to "/"
