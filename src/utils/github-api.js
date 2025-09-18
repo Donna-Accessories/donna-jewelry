@@ -3,7 +3,7 @@
 // WARNING: tokens used here will be visible in the client (devtools). Use for quick demos only.
 
 const RAW_PRODUCTS_URL =
-  "https://raw.githubusercontent.com/Donna-Accessories/donna-jewelry/main/src/data/products.json";
+  "https://raw.githubusercontent.com/gokro/donna-jewelry/main/src/data/products.json";
 
 export async function fetchProductsFromGitHub() {
   try {
@@ -14,33 +14,25 @@ export async function fetchProductsFromGitHub() {
     const data = await res.json();
     return data;
   } catch (err) {
-  console.error("Error fetching products from GitHub:", err);
-  return { products: [] }; // always return an object with products array
+    console.error("Error fetching products from GitHub:", err);
+    return { products: [] }; // always return an object with products array
   }
 }
 
 /**
  * Helper: encode string to base64 safely for most unicode.
- * Note: This uses the classic browser workaround (may still fail for extremely large payloads).
  */
 function encodeBase64Unicode(str) {
-  // Works for most cases (emoji and accented characters included)
   return btoa(unescape(encodeURIComponent(str)));
 }
 
 /**
  * Update or create src/data/products.json in the repo.
- * WARNING: This runs in-browser and will expose `token` to anyone who inspects network/devtools.
- *
- * @param {Array|Object} products - JS object/array to be JSON-serialized
- * @param {string} token - GitHub Personal Access Token (must have repo access)
- * @param {string} repo - owner/repo (default: godwinokronipa/donna-jewelry)
- * @returns {object|null} GitHub API response or null on failure
  */
 export async function updateProductsOnGitHub(
   products,
   token,
-  repo = "godwinokronipa/donna-jewelry",
+  repo = "Donna-Accessories/donna-jewelry", // <-- fixed default repo
   branch = "main"
 ) {
   if (!token) {
@@ -64,11 +56,9 @@ export async function updateProductsOnGitHub(
       const fileData = await getRes.json();
       sha = fileData.sha;
     } else if (getRes.status === 404) {
-      // File doesn't exist yet — we'll create it by omitting `sha` in the PUT body
       sha = undefined;
       console.warn("products.json not found on GitHub — will create a new file.");
     } else {
-      // Other errors
       const errText = await getRes.text().catch(() => "");
       throw new Error(`GitHub GET failed: ${getRes.status} ${getRes.statusText} ${errText}`);
     }
@@ -77,7 +67,7 @@ export async function updateProductsOnGitHub(
     const jsonString = JSON.stringify(products, null, 2);
     const contentBase64 = encodeBase64Unicode(jsonString);
 
-    // 3) Send PUT request to create/update the file
+    // 3) Send PUT request
     const body = {
       message: "Update products.json via web UI",
       content: contentBase64,
