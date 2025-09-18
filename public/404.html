@@ -4,9 +4,10 @@
     <meta charset="utf-8" />
     <title>Redirecting...</title>
     <script>
-      // Redirect all 404s to index.html
-      sessionStorage.redirect = location.href;
-      location.replace("/donna-jewelry/");
+  // Redirect all 404s to index.html for SPA routing
+  var pathname = location.pathname.replace(/^\/donna-jewelry\//, '/');
+  var newUrl = '/donna-jewelry/index.html' + location.search + location.hash;
+  location.replace(newUrl);
     </script>
   </head>
   <body></body>

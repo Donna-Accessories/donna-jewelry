@@ -109,8 +109,7 @@ const ProductProvider = ({ children }) => {
 
   const isCacheValid = useCallback(() => {
     const { cache } = state;
-    return cache.products && cache.timestamp && Date.now() - cache.timestamp < cache.ttl;
-  }, [state.cache]);
+    return cache.products && cache.timestamp && Date.now() - cache.timestamp < cache.t }, [state.cache]);
 
   const fetchProducts = useCallback(async (forceRefresh = false) => {
     if (!forceRefresh && isCacheValid()) return;
