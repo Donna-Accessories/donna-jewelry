@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: github-pages
-          path: ./dist   # Vite outputs to dist by default
+          path: ./dist   # Viteoutputs to dist by default
 
   deploy:
     environment:
