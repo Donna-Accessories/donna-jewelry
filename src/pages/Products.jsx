@@ -27,7 +27,53 @@ import { usePagination } from '../hooks/usePagination.js';
  * - WhatsApp integration for inquiries
  */
 const Products = () => {
-  const { products = [], loading = false, error = null, categories = [] } = useProducts() || {};
+  let { products = [], loading = false, error = null, categories = [] } = useProducts() || {};
+
+  // Dummy data for placeholder display
+  const dummyProducts = [
+    {
+      id: 'dummy1',
+      title: 'Gold Plated Necklace',
+      description: 'Elegant gold plated necklace with Ghanaian beads.',
+      price: '$49',
+      category: 'necklaces',
+      inStock: true,
+      featured: true,
+      image: '/public/vite.svg',
+      dateAdded: '2025-09-01',
+      tags: ['gold', 'necklace', 'ghana']
+    },
+    {
+      id: 'dummy2',
+      title: 'Classic Hoop Earrings',
+      description: 'Timeless hoop earrings for every occasion.',
+      price: '$29',
+      category: 'earrings',
+      inStock: true,
+      featured: false,
+      image: '/src/assets/react.svg',
+      dateAdded: '2025-09-02',
+      tags: ['earrings', 'classic']
+    },
+    {
+      id: 'dummy3',
+      title: 'Beaded Bracelet',
+      description: 'Handcrafted bracelet with colorful beads.',
+      price: '$19',
+      category: 'bracelets',
+      inStock: false,
+      featured: false,
+      image: '/src/assets/react.svg',
+      dateAdded: '2025-09-03',
+      tags: ['bracelet', 'beads']
+    }
+  ];
+
+  // Use dummy data if no products loaded and not loading/error
+  if (!loading && !error && (!products || products.length === 0)) {
+    products = dummyProducts;
+    categories = [...new Set(dummyProducts.map(p => p.category))];
+  }
   const {
     searchTerm = '',
     setSearchTerm = () => {},
@@ -309,6 +355,18 @@ const Products = () => {
                 >
                   Clear Filters
                 </button>
+                {/* Dummy product placeholders */}
+                <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+                  {dummyProducts.map(product => (
+                    <div key={product.id} className="bg-white rounded-lg shadow p-6 flex flex-col items-center">
+                      <img src={product.image} alt={product.title} className="w-24 h-24 object-contain mb-4" />
+                      <h4 className="text-lg font-bold text-gray-800 mb-2">{product.title}</h4>
+                      <p className="text-gray-600 mb-2">{product.description}</p>
+                      <div className="text-gold-primary font-semibold mb-2">{product.price}</div>
+                      <span className={`px-3 py-1 rounded-full text-xs ${product.inStock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{product.inStock ? 'In Stock' : 'Out of Stock'}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 

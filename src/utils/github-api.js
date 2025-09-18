@@ -14,8 +14,8 @@ export async function fetchProductsFromGitHub() {
     const data = await res.json();
     return data;
   } catch (err) {
-    console.error("Error fetching products from GitHub:", err);
-    return []; // fall back to empty list so UI doesn't crash
+  console.error("Error fetching products from GitHub:", err);
+  return { products: [] }; // always return an object with products array
   }
 }
 
