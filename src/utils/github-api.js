@@ -147,6 +147,7 @@ export async function fetchProductsHybrid() {
 /**
  * Utility function to validate product data structure
  */
+
 export async function validateProductData(data) {
   if (!data || typeof data !== 'object') {
     return false;
