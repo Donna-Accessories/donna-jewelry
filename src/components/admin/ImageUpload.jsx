@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { LoadingSpinner } from '../ui/LoadingSpinner';
+import LoadingSpinner from '../ui/LoadingSpinner';
 
 const ImageUpload = ({ currentImage, onUpload, loading }) => {
   const onDrop = useCallback(async (acceptedFiles) => {
