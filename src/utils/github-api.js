@@ -3,7 +3,7 @@
 // WARNING: tokens used here will be visible in the client (devtools). Use for quick demos only.
 
 const RAW_PRODUCTS_URL =
-  "https://raw.githubusercontent.com/gokro/donna-jewelry/main/src/data/products.json";
+  "https://raw.githubusercontent.com/Donna-Accessories/donna-jewelry/main/src/data/products.json";
 
 export async function fetchProductsFromGitHub() {
   try {
