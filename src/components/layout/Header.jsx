@@ -20,14 +20,6 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Brand Logo */}
           <div className="text-center">
-            <motion.div
-              className="text-yellow-400 text-4xl font-bold mb-1"
-              initial={{ rotate: 0 }}
-              animate={{ rotate: 360 }}
-              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-            >
-              ∞
-            </motion.div>
             <h1 className="text-2xl font-bold text-yellow-400">DONNA</h1>
             <p className="text-sm text-yellow-300 tracking-wide">
               JEWELLERY & ACCESSORIES

@@ -1,22 +1,27 @@
 import React, { useState } from 'react';
+import { Pencil, Trash2, Check, X } from 'lucide-react';
 import { useProducts } from '../../hooks/useProducts';
 import LoadingSpinner from '../ui/LoadingSpinner';
-import Modal from '../ui/Modal';
 
 const ProductTable = ({ onEdit }) => {
   const { products = [], loading, error, deleteProduct } = useProducts();
-  const [deleteModal, setDeleteModal] = useState({ show: false, productId: null });
-  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [deleteError, setDeleteError] = useState(null);
 
-  const handleDelete = async (id) => {
-    try {
-      setDeleteLoading(true);
-      await deleteProduct(id);
-      setDeleteModal({ show: false, productId: null });
-    } catch (err) {
-      console.error('Failed to delete product:', err);
-    } finally {
-      setDeleteLoading(false);
+  const handleDelete = async (productId) => {
+    if (deleteConfirm === productId) {
+      try {
+        setDeleteError(null);
+        await deleteProduct(productId);
+      } catch (err) {
+        console.error('Failed to delete product:', err);
+        setDeleteError(err.message);
+      }
+      setDeleteConfirm(null);
+    } else {
+      setDeleteConfirm(productId);
+      // Auto-hide confirmation after 5 seconds
+      setTimeout(() => setDeleteConfirm(null), 5000);
     }
   };
 
@@ -66,52 +71,51 @@ const ProductTable = ({ onEdit }) => {
                 </span>
               </td>
               <td className="border px-4 py-2">
-                <button
-                  onClick={() => onEdit(product)}
-                  className="btn-secondary mr-2"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => setDeleteModal({ show: true, productId: product.id })}
-                  className="btn-primary bg-red-600 hover:bg-red-700"
-                >
-                  Delete
-                </button>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => onEdit(product)}
+                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-full"
+                    title="Edit product"
+                  >
+                    <Pencil className="w-5 h-5" />
+                  </button>
+                  
+                  {deleteConfirm === product.id ? (
+                    <>
+                      <button
+                        onClick={() => handleDelete(product.id)}
+                        className="p-2 text-green-600 hover:bg-green-50 rounded-full"
+                        title="Confirm delete"
+                      >
+                        <Check className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => setDeleteConfirm(null)}
+                        className="p-2 text-gray-600 hover:bg-gray-50 rounded-full"
+                        title="Cancel delete"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => handleDelete(product.id)}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-full"
+                      title="Delete product"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
+                {deleteError && product.id === deleteConfirm && (
+                  <p className="text-sm text-red-600 mt-1">{deleteError}</p>
+                )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Delete Confirmation Modal */}
-      <Modal
-        isOpen={deleteModal.show}
-        onClose={() => setDeleteModal({ show: false, productId: null })}
-      >
-        <div className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Confirm Delete</h3>
-          <p className="text-gray-600 mb-6">
-            Are you sure you want to delete this product? This action cannot be undone.
-          </p>
-          <div className="flex justify-end space-x-4">
-            <button
-              onClick={() => setDeleteModal({ show: false, productId: null })}
-              className="btn-secondary"
-              disabled={deleteLoading}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={() => handleDelete(deleteModal.productId)}
-              className="btn-primary bg-red-600 hover:bg-red-700"
-              disabled={deleteLoading}
-            >
-              {deleteLoading ? 'Deleting...' : 'Delete'}
-            </button>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 };

@@ -13,6 +13,15 @@ import { useSearch } from '../hooks/useSearch.js';
 import { usePagination } from '../hooks/usePagination.js';
 import LoadingSpinner from '../components/ui/LoadingSpinner.jsx';
 
+// Predefined categories
+const PRODUCT_CATEGORIES = [
+  'Bracelets',
+  'Necklaces',
+  'Earrings',
+  'Watches',
+  'Others'
+];
+
 const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [viewMode, setViewMode] = useState('grid');
@@ -67,12 +76,26 @@ const Products = () => {
 
     // 2) selectedCategory (URL param)
     if (selectedCategory) {
-      out = out.filter(p => (p.category || '').toLowerCase() === selectedCategory);
+      const normalizedSelected = selectedCategory.toLowerCase();
+      out = out.filter(p => {
+        const productCategory = (p.category || '').toLowerCase();
+        if (normalizedSelected === 'others') {
+          return !PRODUCT_CATEGORIES.slice(0, -1).map(c => c.toLowerCase()).includes(productCategory);
+        }
+        return productCategory === normalizedSelected;
+      });
     }
 
     // 3) local filters (from FilterPanel)
     if (localFilters && localFilters.category && localFilters.category !== 'all') {
-      out = out.filter(p => (p.category || '').toLowerCase() === localFilters.category.toLowerCase());
+      const normalizedCategory = localFilters.category.toLowerCase();
+      out = out.filter(p => {
+        const productCategory = (p.category || '').toLowerCase();
+        if (normalizedCategory === 'others') {
+          return !PRODUCT_CATEGORIES.slice(0, -1).map(c => c.toLowerCase()).includes(productCategory);
+        }
+        return productCategory === normalizedCategory;
+      });
     }
 
     if (localFilters.minPrice != null || localFilters.maxPrice != null) {
@@ -185,7 +208,7 @@ const Products = () => {
 
             <div className={`${showFilters ? 'block' : 'hidden lg:block'}`}>
               <FilterPanel
-                categories={categories}
+                categories={PRODUCT_CATEGORIES}
                 filters={localFilters}
                 onFilterChange={handleFilterChange}
                 priceRange={computedPriceRange}
@@ -253,7 +276,7 @@ const Products = () => {
                     <div className="text-gray-600">Total Pieces</div>
                   </div>
                   <div>
-                    <div className="text-3xl font-bold text-gold-primary mb-2">{categories?.length || 0}</div>
+                    <div className="text-3xl font-bold text-gold-primary mb-2">{PRODUCT_CATEGORIES.length}</div>
                     <div className="text-gray-600">Categories</div>
                   </div>
                   <div>

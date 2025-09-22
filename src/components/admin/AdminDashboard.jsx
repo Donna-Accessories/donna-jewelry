@@ -7,10 +7,11 @@ import ProductTable from './ProductTable';
 import LoadingSpinner from '../ui/LoadingSpinner';
 
 const AdminDashboard = () => {
-  const { isAuthenticated, logout } = useAdminContext();
-  const { products, categories, loading: productsLoading } = useProducts();
+  const { isAuthenticated, logout, user } = useAdminContext();
+  const { products, categories, loading: productsLoading, refresh } = useProducts();
   const [editingProduct, setEditingProduct] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [error, setError] = useState(null);
   const [stats, setStats] = useState({
     total: 0,
     inStock: 0,
@@ -45,9 +46,74 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
+          <p className="text-gray-600">Logged in as {user?.email}</p>
+        </div>
+        <button
+          onClick={logout}
+          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+        >
+          Logout
+        </button>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="text-3xl font-bold text-gold-primary">{stats.total}</div>
+          <div className="text-gray-600">Total Products</div>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="text-3xl font-bold text-gold-primary">{stats.inStock}</div>
+          <div className="text-gray-600">In Stock</div>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="text-3xl font-bold text-gold-primary">{stats.featured}</div>
+          <div className="text-gray-600">Featured</div>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="text-3xl font-bold text-gold-primary">{stats.categories}</div>
+          <div className="text-gray-600">Categories</div>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="flex justify-between items-center mb-6">
+        <button
+          onClick={() => {
+            setEditingProduct(null);
+            setShowAddForm(true);
+          }}
+          className="px-4 py-2 bg-gold-primary text-white rounded-lg hover:bg-gold-600"
+        >
+          Add New Product
+        </button>
+        <button
+          onClick={refresh}
+          className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+        >
+          Refresh Data
+        </button>
+      </div>
+
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
+          {error}
+        </div>
+      )}
+
       {showAddForm ? (
         <ProductForm
           product={editingProduct}
+          onClose={handleFormClose}
+          onSave={() => {
+            handleFormClose();
+            refresh();
+          }}
+          setError={setError}
           onSubmit={handleFormClose}
           onCancel={handleFormClose}
         />

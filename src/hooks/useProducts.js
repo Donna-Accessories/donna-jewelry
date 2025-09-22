@@ -58,11 +58,99 @@ export const useProducts = () => {
     fetchProducts();
   }, [fetchProducts]);
 
+  // Add a new product
+  const addProduct = async (productData) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const { data, error: insertError } = await supabase
+        .from('products')
+        .insert([{
+          title: productData.title,
+          description: productData.description,
+          price: productData.price,
+          category: productData.category.toLowerCase(),
+          image: productData.image,
+          tags: productData.tags,
+          in_stock: productData.inStock,
+          featured: productData.featured,
+          date_added: new Date().toISOString()
+        }])
+        .select()
+        .single();
+
+      if (insertError) throw insertError;
+      await fetchProducts(); // Refresh the list
+      return data;
+    } catch (err) {
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Update an existing product
+  const updateProduct = async (id, productData) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const { error: updateError } = await supabase
+        .from('products')
+        .update({
+          title: productData.title,
+          description: productData.description,
+          price: productData.price,
+          category: productData.category.toLowerCase(),
+          image: productData.image,
+          tags: productData.tags,
+          in_stock: productData.inStock,
+          featured: productData.featured,
+          last_modified: new Date().toISOString()
+        })
+        .eq('id', id);
+
+      if (updateError) throw updateError;
+      await fetchProducts(); // Refresh the list
+    } catch (err) {
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Delete a product
+  const deleteProduct = async (id) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const { error: deleteError } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', id);
+
+      if (deleteError) throw deleteError;
+      await fetchProducts(); // Refresh the list
+    } catch (err) {
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     products,
     categories,
     loading,
     error,
     refresh: fetchProducts,
+    addProduct,
+    updateProduct,
+    deleteProduct
   };
 };
