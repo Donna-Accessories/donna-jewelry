@@ -1,14 +1,68 @@
 // src/hooks/useProducts.js
-import { useContext } from "react"
-import { ProductContext } from "../contexts/ProductContext.jsx"
+import { useState, useEffect, useCallback } from 'react';
+import supabase from '../utils/supabaseClient';
 
-// Named export (must match your import in Home.jsx)
-export function useProducts() {
-  const context = useContext(ProductContext)
+/**
+ * useProducts - loads products and categories from Supabase
+ * Exposes: products[], categories[], loading, error, refresh()
+ */
+export const useProducts = () => {
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  if (!context) {
-    throw new Error("useProducts must be used within a ProductProvider")
-  }
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // products table should include: id, title, description, price, category, image, tags, in_stock, featured, date_added (or dateAdded)
+      const { data, error: fetchError } = await supabase
+        .from('products')
+        .select('*')
+        .order('date_added', { ascending: false });
 
-  return context   // expects ProductProvider to supply { products, loading, error }
-}
+      if (fetchError) throw fetchError;
+
+      const normalized = (data || []).map(p => ({
+        id: p.id,
+        title: p.title || 'Untitled',
+        description: p.description || '',
+        price: p.price ? (typeof p.price === 'number' ? p.price.toString() : p.price) : '0',
+        // Some records may use date_added / dateAdded, normalize
+        dateAdded: p.date_added || p.dateAdded || new Date().toISOString(),
+        category: (p.category || 'uncategorized').toString(),
+        image: p.image || '',
+        tags: Array.isArray(p.tags) ? p.tags : (p.tags ? [String(p.tags)] : []),
+        inStock: !!p.in_stock,
+        featured: !!p.featured,
+        raw: p
+      }));
+
+      setProducts(normalized);
+
+      // derive categories from products (unique)
+      const unique = Array.from(new Set(normalized.map(p => p.category?.toString().toLowerCase() || 'uncategorized')))
+        .filter(Boolean)
+        .sort();
+      setCategories(unique);
+    } catch (err) {
+      console.error('useProducts fetch error', err);
+      setError(err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  return {
+    products,
+    categories,
+    loading,
+    error,
+    refresh: fetchProducts,
+  };
+};

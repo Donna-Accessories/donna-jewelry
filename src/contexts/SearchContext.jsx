@@ -42,12 +42,26 @@ export const SearchProvider = ({ children }) => {
     }
   };
 
+  // Filter products helper function
+  const filterProducts = (products, term) => {
+    if (!term) return products;
+    const lower = term.toLowerCase();
+    return products.filter(
+      (p) =>
+        p.title?.toLowerCase().includes(lower) ||
+        p.description?.toLowerCase().includes(lower) ||
+        p.category?.toLowerCase().includes(lower) ||
+        p.tags?.some(tag => tag.toLowerCase().includes(lower))
+    );
+  };
+
   return (
     <SearchContext.Provider
       value={{
         searchTerm,
         setSearchTerm,
         results,
+        filterProducts,
         setResults,
         handleSearch,
         error,

@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // Layout
 import Layout from './components/layout/Layout.jsx';
 
-// Regular Pages
+  // Regular Pages
 import Home from './pages/Home.jsx';
 import Products from './pages/Products.jsx';
 
@@ -14,7 +14,8 @@ import { ProductProvider } from './contexts/ProductContext.jsx';
 import { AdminProvider } from './contexts/AdminContext.jsx';
 import { SearchProvider } from './contexts/SearchContext.jsx';
 
-// Styles
+// Routes
+import routes from './utils/routes.js';// Styles
 import './index.css';
 
 // Lazy-loaded pages
@@ -82,7 +83,7 @@ const App = () => {
       <AdminProvider>
         <ProductProvider>
           <SearchProvider>
-            <Router basename="/donna-jewelry">
+            <Router>
               <Layout>
                 <Suspense
                   fallback={
@@ -92,12 +93,12 @@ const App = () => {
                   }
                 >
                   <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/products" element={<Products />} />
+                    <Route path={routes.home} element={<Home />} />
+                    <Route path={routes.products} element={<Products />} />
                     {/* Lazy pages */}
-                    <Route path="/product/:id" element={<ProductDetail />} />
-                    <Route path="/admin" element={<Admin />} />
-                    <Route path="/about" element={<About />} />
+                    <Route path={`${routes.products}/:id`} element={<ProductDetail />} />
+                    <Route path={routes.admin} element={<Admin />} />
+                    <Route path={routes.about} element={<About />} />
                     {/* 404 */}
                     <Route
                       path="*"
@@ -113,13 +114,13 @@ const App = () => {
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                               <a
-                                href="/donna-jewelry/"
+                                href={routes.home}
                                 className="bg-gold-primary hover:bg-gold-600 text-white px-6 py-3 rounded-lg"
                               >
                                 Go Home
                               </a>
                               <a
-                                href="/donna-jewelry/products"
+                                href={routes.products}
                                 className="border border-gold-primary text-gold-primary hover:bg-gold-primary hover:text-white px-6 py-3 rounded-lg"
                               >
                                 Shop Jewelry

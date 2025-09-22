@@ -47,7 +47,7 @@ const Footer = () => {
               {[
                 { name: "Home", to: routes.home },
                 { name: "All Products", to: routes.products },
-                { name: "Rings", to: routes.category('rings') },
+                { name: "Bracelets", to: routes.category('bracelets') },
                 { name: "Necklaces", to: routes.category('necklaces') },
                 { name: "Earrings", to: routes.category('earrings') },
                 { name: "Watches", href: "/watches" },

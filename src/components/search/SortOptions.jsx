@@ -2,9 +2,7 @@ import React from 'react';
 import { SortAsc, SortDesc } from 'lucide-react';
 import { useSearch } from '../../hooks/useSearch';
 
-const SortOptions = () => {
-  const { sortBy, setSortBy } = useSearch();
-
+const SortOptions = ({ value, onChange }) => {
   const options = [
     { value: 'dateAdded-desc', label: 'Newest First', icon: <SortDesc size={16} /> },
     { value: 'dateAdded-asc', label: 'Oldest First', icon: <SortAsc size={16} /> },
@@ -15,14 +13,15 @@ const SortOptions = () => {
   ];
 
   const handleSortChange = (e) => {
-    const [field, direction] = e.target.value.split('-');
-    setSortBy({ field, direction });
+    if (onChange) {
+      onChange(e.target.value);
+    }
   };
 
   return (
     <div className="relative">
       <select
-        value={`${sortBy.field}-${sortBy.direction}`}
+        value={value}
         onChange={handleSortChange}
         className="
           appearance-none
