@@ -203,7 +203,7 @@ const Home = () => {
               </div>
               <h3 className="text-xl font-semibold text-gray-800 mb-4">Authentic Materials</h3>
               <p className="text-gray-600 leading-relaxed">
-                Genuine gold, silver, and precious stones with certificates of authenticity.
+                Genuine and Authentic products that make you shine.
               </p>
             </div>
 

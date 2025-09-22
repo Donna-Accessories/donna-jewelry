@@ -1,9 +1,5 @@
-// src/contexts/AdminContext.jsx
-// Simple Admin Context for Donna's Jewelry Store
-// Email: Donna@Jewelry.com
-// Password: Donna123
-
-import React, { createContext, useContext, useReducer, useCallback } from "react";
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import supabase from '../utils/supabaseClient';
 
 const AdminContext = createContext();
 
@@ -13,59 +9,55 @@ export const useAdminContext = () => {
   return ctx;
 };
 
-const initialState = {
-  isAuthenticated: localStorage.getItem("isAdmin") === "true",
-  error: null,
-};
-
-const ActionTypes = {
-  LOGIN_SUCCESS: "LOGIN_SUCCESS",
-  LOGIN_FAILURE: "LOGIN_FAILURE",
-  LOGOUT: "LOGOUT",
-};
-
-const adminReducer = (state, action) => {
-  switch (action.type) {
-    case ActionTypes.LOGIN_SUCCESS:
-      return { isAuthenticated: true, error: null };
-    case ActionTypes.LOGIN_FAILURE:
-      return { isAuthenticated: false, error: action.payload };
-    case ActionTypes.LOGOUT:
-      return { isAuthenticated: false, error: null };
-    default:
-      return state;
-  }
-};
-
 export const AdminProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(adminReducer, initialState);
+  const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = useCallback((email, password) => {
-    if (email === "Donna@Jewelry.com" && password === "Donna123") {
-      localStorage.setItem("isAdmin", "true");
-      dispatch({ type: ActionTypes.LOGIN_SUCCESS });
-      return true;
-    } else {
-      dispatch({ type: ActionTypes.LOGIN_FAILURE, payload: "Invalid credentials" });
-      return false;
+  useEffect(() => {
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+
+  }, []);
+
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+      setSession(null);
+    } catch (error) {
+      console.error('Error logging out:', error);
     }
-  }, []);
+  };
 
-  const logout = useCallback(() => {
-    localStorage.removeItem("isAdmin");
-    dispatch({ type: ActionTypes.LOGOUT });
-  }, []);
+  const value = {
+    session,
+    setSession,
+    user: session?.user ?? null,
+    isAuthenticated: !!session,
+    logout,
+    loading
+  };
 
   return (
-    <AdminContext.Provider
-      value={{
-        isAuthenticated: state.isAuthenticated,
-        error: state.error,
-        login,
-        logout,
-      }}
-    >
-      {children}
+    <AdminContext.Provider value={value}>
+      {loading ? (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="w-8 h-8 border-4 border-gold-primary border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      ) : (
+        children
+      )}
     </AdminContext.Provider>
   );
 };

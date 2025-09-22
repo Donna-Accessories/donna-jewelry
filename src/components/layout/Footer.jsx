@@ -1,10 +1,12 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import {
   PhoneIcon,
   AtSymbolIcon,
 } from "@heroicons/react/24/outline";
 import { FaInstagram, FaWhatsapp } from "react-icons/fa";
+import routes from "../../utils/routes";
 
 const Footer = () => {
   return (
@@ -43,11 +45,11 @@ const Footer = () => {
             </h3>
             <ul className="space-y-2">
               {[
-                { name: "Home", href: "/" },
-                { name: "All Products", href: "/products" },
-                { name: "Rings", href: "/rings" },
-                { name: "Necklaces", href: "/necklaces" },
-                { name: "Earrings", href: "/earrings" },
+                { name: "Home", to: routes.home },
+                { name: "All Products", to: routes.products },
+                { name: "Rings", to: routes.category('rings') },
+                { name: "Necklaces", to: routes.category('necklaces') },
+                { name: "Earrings", to: routes.category('earrings') },
                 { name: "Watches", href: "/watches" },
               ].map((link) => (
                 <li key={link.name}>

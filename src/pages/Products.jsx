@@ -27,7 +27,94 @@ import { usePagination } from '../hooks/usePagination.js';
  * - WhatsApp integration for inquiries
  */
 const Products = () => {
-  let { products = [], loading = false, error = null, categories = [] } = useProducts() || {};
+  // State
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [sortOrder, setSortOrder] = useState({ field: 'dateAdded', direction: 'desc' });
+  const [viewMode, setViewMode] = useState('grid');
+  
+  // Hooks
+  const { products, loading, error, categories } = useProducts();
+  const { searchTerm, handleSearch, results: searchResults } = useSearch();
+  
+  // Handle URL parameters for category filtering
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const categoryParam = params.get('category');
+    if (categoryParam) {
+      setSelectedCategory(categoryParam.toLowerCase());
+    }
+  }, []);
+
+  // Handle loading and error states
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
+        <h2 className="text-2xl font-bold text-red-600 mb-2">Something Went Wrong</h2>
+        <p className="text-gray-600 mb-4">
+          {error.message || 'An error occurred while loading products. Please try again.'}
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+        >
+          Refresh Page
+        </button>
+      </div>
+    );
+  }
+
+  // Apply all filters in sequence
+  const filteredProducts = useMemo(() => {
+    let filtered = [...products];
+
+    // 1. Apply search filter first
+    if (searchTerm && searchTerm.trim() !== '') {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(product => 
+        product.title?.toLowerCase().includes(term) ||
+        product.description?.toLowerCase().includes(term) ||
+        product.category?.toLowerCase().includes(term)
+      );
+    }
+
+    // 2. Apply category filter
+    if (selectedCategory) {
+      filtered = filtered.filter(product => 
+        product.category?.toLowerCase() === selectedCategory
+      );
+    }
+
+    // 3. Apply sorting
+    return filtered.sort((a, b) => {
+      const aValue = a[sortOrder.field];
+      const bValue = b[sortOrder.field];
+      const direction = sortOrder.direction === 'asc' ? 1 : -1;
+
+      if (sortOrder.field === 'price') {
+        // Handle price sorting (remove currency symbol and convert to number)
+        const aPrice = parseFloat(aValue.replace(/[^0-9.-]+/g, ''));
+        const bPrice = parseFloat(bValue.replace(/[^0-9.-]+/g, ''));
+        return (aPrice - bPrice) * direction;
+      }
+
+      if (aValue < bValue) return -1 * direction;
+      if (aValue > bValue) return 1 * direction;
+      return 0;
+    });
+  }, [products, searchTerm, searchResults, selectedCategory, sortOrder]);
+
+  // Handle search changes
+  useEffect(() => {
+    handleSearch(searchTerm, products);
+  }, [searchTerm, products, handleSearch]);
 
   // Dummy data for placeholder display
   const dummyProducts = [
@@ -75,8 +162,6 @@ const Products = () => {
     categories = [...new Set(dummyProducts.map(p => p.category))];
   }
   const {
-    searchTerm = '',
-    setSearchTerm = () => {},
     filters = {},
     setFilters = () => {},
     sortBy = '',
@@ -85,14 +170,13 @@ const Products = () => {
   
   // Local state for UI controls
   const [showFilters, setShowFilters] = useState(false);
-  const [viewMode, setViewMode] = useState('grid'); // grid or list
   const [priceRange, setPriceRange] = useState([0, 10000]);
 
   // Items per page configuration
   const itemsPerPage = 12;
 
-  // Filter and sort products based on current criteria
-  const filteredProducts = useMemo(() => {
+  // Apply filters in sequence (sorting will be handled separately)
+  const processedProducts = useMemo(() => {
     if (!Array.isArray(products) || products.length === 0) return [];
 
     let filtered = [...products];
@@ -166,7 +250,7 @@ const Products = () => {
     startIndex,
     endIndex,
     currentItems
-  } = usePagination(filteredProducts, itemsPerPage);
+  } = usePagination(processedProducts, itemsPerPage);
 
   // Reset to first page when filters change
   useEffect(() => {
@@ -303,7 +387,7 @@ const Products = () => {
               {/* Results Summary */}
               <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
                 <span>
-                  Showing {startIndex + 1}-{Math.min(endIndex, filteredProducts.length)} of {filteredProducts.length} products
+                  Showing {startIndex + 1}-{Math.min(endIndex, processedProducts.length)} of {processedProducts.length} products
                 </span>
                 
                 {/* Active Filters */}
@@ -340,7 +424,7 @@ const Products = () => {
             )}
 
             {/* No Results State */}
-            {!loading && !error && filteredProducts.length === 0 && (
+            {!loading && !error && processedProducts.length === 0 && (
               <div className="text-center py-12">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                   <Search className="w-8 h-8 text-gray-400" />
@@ -371,8 +455,15 @@ const Products = () => {
             )}
 
             {/* Products Grid/List */}
-            {!loading && !error && currentItems.length > 0 && (
+            {!loading && !error && (
               <>
+                {selectedCategory && (
+                  <div className="mb-4 px-4">
+                    <h2 className="text-2xl font-semibold capitalize">
+                      {selectedCategory}
+                    </h2>
+                  </div>
+                )}
                 <ProductGrid
                   products={currentItems}
                   viewMode={viewMode}

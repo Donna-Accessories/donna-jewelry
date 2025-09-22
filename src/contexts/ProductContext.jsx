@@ -1,6 +1,6 @@
 // src/contexts/ProductContext.jsx
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
-import { fetchProductsFromGitHub, updateProductsOnGitHub } from '../utils/github-api.js';
+import { useSupabase } from '../hooks/useSupabase';
 
 // Initial state
 const initialState = {
@@ -116,14 +116,28 @@ const ProductProvider = ({ children }) => {
 
     dispatch({ type: ActionTypes.FETCH_START });
     try {
-      const data = await fetchProductsFromGitHub();
-      const categories = [
-        ...new Set(data.products?.map(p => p.category?.toLowerCase()).filter(Boolean))
-      ].sort();
+      // Fetch products
+      const { data: products, error: productsError } = await supabase
+        .from('products')
+        .select('*')
+        .order('dateAdded', { ascending: false });
+      
+      if (productsError) throw productsError;
+
+      // Fetch categories from a separate table
+      const { data: categoryData, error: categoriesError } = await supabase
+        .from('categories')
+        .select('name');
+      
+      if (categoriesError) throw categoriesError;
+      
+      const categories = categoryData
+        ? categoryData.map(c => c.name.toLowerCase()).sort()
+        : [...new Set(products?.map(p => p.category?.toLowerCase()).filter(Boolean))].sort();
 
       dispatch({
         type: ActionTypes.FETCH_SUCCESS,
-        payload: { products: data.products || [], categories }
+        payload: { products: products || [], categories }
       });
     } catch (err) {
       dispatch({ type: ActionTypes.FETCH_ERROR, payload: err.message || 'Failed to load products' });

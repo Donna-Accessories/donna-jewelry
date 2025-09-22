@@ -2,6 +2,7 @@
 import React from "react";
 import { useParams, Link } from "react-router-dom";
 import { useProductContext } from "../../contexts/ProductContext";
+import WhatsAppButton from "./WhatsAppButton";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -27,6 +28,11 @@ export default function ProductDetail() {
             src={product.image || "/placeholder.jpg"}
             alt={product.title}
             className="rounded-2xl shadow-lg object-cover w-full h-96"
+          />
+
+          {/* Shop Now Button */}
+          <WhatsAppButton 
+            message={`Hello, I'm interested in ${product.title} priced at ${product.price}. Is it available?`}
           />
           {product.images && product.images.length > 1 && (
             <div className="grid grid-cols-4 gap-2">

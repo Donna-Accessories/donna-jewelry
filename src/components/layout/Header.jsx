@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { Link, useLocation } from "react-router-dom";
+import routes from "../../utils/routes";
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
 
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "Products", href: "/donna-jewelry/products" },
-    { name: "About", href: "/about" },
-    { name: "Contact", href: "/contact" },
+    { name: "Home", to: routes.home },
+    { name: "Products", to: routes.products },
+    { name: "About", to: routes.about },
   ];
 
   return (
@@ -35,14 +37,18 @@ const Header = () => {
           {/* Navigation Menu */}
           <nav className="hidden md:flex space-x-8">
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.name}
-                href={link.href}
-                className="relative group transition-colors duration-300"
+                to={link.to}
+                className={`relative group transition-colors duration-300 ${
+                  location.pathname === link.to ? 'text-yellow-400' : ''
+                }`}
               >
                 {link.name}
-                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-yellow-400 transition-all duration-300 group-hover:w-full"></span>
-              </a>
+                <span className={`absolute left-0 -bottom-1 h-0.5 bg-yellow-400 transition-all duration-300 ${
+                  location.pathname === link.to ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}></span>
+              </Link>
             ))}
           </nav>
 
