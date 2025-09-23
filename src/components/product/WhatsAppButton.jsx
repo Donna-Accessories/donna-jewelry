@@ -1,7 +1,7 @@
 // src/components/product/WhatsAppButton.jsx
 import React from "react"
 
-export default function WhatsAppButton({ phone = "233200000000", message = "Hello, I’d like to know more about your jewelry." }) {
+export default function WhatsAppButton({ phone = "+233248628880", message = "Hello, I’d like to know more about your jewelry." }) {
   const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
 
   return (
