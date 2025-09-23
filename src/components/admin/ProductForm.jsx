@@ -171,7 +171,8 @@ const ProductForm = ({ product, onClose, onSave, setError: setParentError }) => 
           </label>
           <ImageUpload
             currentImage={formData.image}
-            onImageSelect={handleImageSelect}
+            onUpload={handleImageUpload}
+            loading={loading}
           />
         </div>
 
