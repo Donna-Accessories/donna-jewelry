@@ -146,7 +146,7 @@ const Home = () => {
             {/* View All Button */}
             <div className="text-center">
               <Link
-                to="/products"
+                to="/donna-jewelry/products"
                 className="
                   inline-flex items-center gap-2
                   bg-white border-2 border-gold-primary text-gold-primary 
@@ -334,7 +334,7 @@ const Home = () => {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              to="/products"
+              to="/donna-jewelry/products"
               className="
                 bg-white text-gold-primary hover:bg-gray-50
                 px-8 py-4 rounded-lg font-semibold text-lg
