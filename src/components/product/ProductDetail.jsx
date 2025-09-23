@@ -1,13 +1,41 @@
 // src/components/product/ProductDetail.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useProductContext } from "../../contexts/ProductContext";
 import WhatsAppButton from "./WhatsAppButton";
 
 export default function ProductDetail() {
   const { id } = useParams();
-  const { getProductById } = useProductContext();
-  const product = getProductById(id);
+  const { getProductById, fetchProducts, loading, error } = useProductContext();
+  const [product, setProduct] = useState(null);
+
+  // Ensure we fetch if products are not already loaded
+  useEffect(() => {
+    const p = getProductById(id);
+    if (!p) {
+      fetchProducts(true).then(() => {
+        setProduct(getProductById(id));
+      });
+    } else {
+      setProduct(p);
+    }
+  }, [id, getProductById, fetchProducts]);
+
+  if (loading && !product) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <h1 className="text-xl text-gray-600">Loading product...</h1>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <h1 className="text-xl text-red-600">Error: {error}</h1>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -30,22 +58,10 @@ export default function ProductDetail() {
             className="rounded-2xl shadow-lg object-cover w-full h-96"
           />
 
-          {/* Shop Now Button */}
-          <WhatsAppButton 
+          {/* WhatsApp Button */}
+          <WhatsAppButton
             message={`Hello, I'm interested in ${product.title} priced at ${product.price}. Is it available?`}
           />
-          {product.images && product.images.length > 1 && (
-            <div className="grid grid-cols-4 gap-2">
-              {product.images.map((img, idx) => (
-                <img
-                  key={idx}
-                  src={img}
-                  alt={`${product.title} ${idx}`}
-                  className="rounded-lg object-cover h-24 w-full cursor-pointer hover:opacity-80"
-                />
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Product Details */}
@@ -56,7 +72,9 @@ export default function ProductDetail() {
           <p className="text-gold-primary text-xl font-semibold">
             ${product.price}
           </p>
-          <p className="text-gray-700 leading-relaxed">{product.description}</p>
+          <p className="text-gray-700 leading-relaxed">
+            {product.description}
+          </p>
           <p className="text-sm text-gray-500">
             Category:{" "}
             <span className="capitalize font-medium">{product.category}</span>
