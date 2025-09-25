@@ -10,8 +10,8 @@ const FilterPanel = ({ categories, filters, onFilterChange, priceRange, onClearF
     onFilterChange({ minPrice: min, maxPrice: max });
   };
 
-  const handleInStockChange = (inStock) => {
-    onFilterChange({ inStock });
+  const handlein_stockChange = (in_stock) => {
+    onFilterChange({ in_stock });
   };
 
   return (
@@ -79,8 +79,8 @@ const FilterPanel = ({ categories, filters, onFilterChange, priceRange, onClearF
         <label className="flex items-center gap-2">
           <input
             type="checkbox"
-            checked={filters.inStock}
-            onChange={(e) => handleInStockChange(e.target.checked)}
+            checked={filters.in_stock}
+            onChange={(e) => handlein_stockChange(e.target.checked)}
             className="rounded border-gray-300 text-gold-primary focus:ring-gold-primary"
           />
           <span>In Stock Only</span>

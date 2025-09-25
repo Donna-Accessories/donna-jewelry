@@ -6,7 +6,8 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import  supabase  from "../utils/supabaseClient"; // make sure this file exports your client
+import supabase from "../utils/supabaseClient"; // ✅ default export
+import { useAdminContext } from "./AdminContext";
 
 // Initial state
 const initialState = {
@@ -128,6 +129,15 @@ export const useProductContext = () => {
 const ProductProvider = ({ children }) => {
   const [state, dispatch] = useReducer(productReducer, initialState);
 
+  // ✅ Safe fallback: don’t crash if AdminProvider isn’t mounted yet
+  let isAuthenticated = false;
+  try {
+    const admin = useAdminContext();
+    isAuthenticated = admin?.isAuthenticated || false;
+  } catch {
+    isAuthenticated = false;
+  }
+
   const isCacheValid = useCallback(() => {
     const { cache } = state;
     return (
@@ -182,71 +192,98 @@ const ProductProvider = ({ children }) => {
   );
 
   // --- Add product ---
-  const addProduct = useCallback(async (productData) => {
-    try {
-      dispatch({ type: ActionTypes.FETCH_START });
+  const addProduct = useCallback(
+    async (productData) => {
+      if (!isAuthenticated) {
+        dispatch({ type: ActionTypes.FETCH_ERROR, payload: "Not authorized" });
+        return null;
+      }
 
-      const newProduct = {
-        ...productData,
-        in_stock: productData.in_stock ?? true,
-        featured: productData.featured ?? false,
-        date_added: new Date().toISOString(),
-      };
+      try {
+        dispatch({ type: ActionTypes.FETCH_START });
 
-      const { data, error } = await supabase
-        .from("products")
-        .insert([newProduct])
-        .select()
-        .single();
+        const newProduct = {
+          ...productData,
+          in_stock: productData.in_stock ?? true,
+          featured: productData.featured ?? false,
+          date_added: new Date().toISOString(),
+        };
 
-      if (error) throw error;
+        const { data, error } = await supabase
+          .from("products")
+          .insert([newProduct])
+          .select()
+          .single();
 
-      dispatch({ type: ActionTypes.ADD_PRODUCT, payload: data });
-      return data;
-    } catch (err) {
-      dispatch({ type: ActionTypes.FETCH_ERROR, payload: err.message });
-      return null;
-    }
-  }, []);
+        if (error) throw error;
+
+        dispatch({ type: ActionTypes.ADD_PRODUCT, payload: data });
+        return data;
+      } catch (err) {
+        dispatch({ type: ActionTypes.FETCH_ERROR, payload: err.message });
+        return null;
+      }
+    },
+    [isAuthenticated]
+  );
 
   // --- Update product ---
-  const updateProduct = useCallback(async (id, updates) => {
-    try {
-      dispatch({ type: ActionTypes.FETCH_START });
+  const updateProduct = useCallback(
+    async (id, updates) => {
+      if (!isAuthenticated) {
+        dispatch({ type: ActionTypes.FETCH_ERROR, payload: "Not authorized" });
+        return null;
+      }
 
-      const { data, error } = await supabase
-        .from("products")
-        .update({ ...updates, lastModified: new Date().toISOString() })
-        .eq("id", id)
-        .select()
-        .single();
+      try {
+        dispatch({ type: ActionTypes.FETCH_START });
 
-      if (error) throw error;
+        const { data, error } = await supabase
+          .from("products")
+          .update({ ...updates, last_modified: new Date().toISOString() })
+          .eq("id", id)
+          .select()
+          .single();
 
-      dispatch({ type: ActionTypes.UPDATE_PRODUCT, payload: { id, updates: data } });
-      return data;
-    } catch (err) {
-      dispatch({ type: ActionTypes.FETCH_ERROR, payload: err.message });
-      return null;
-    }
-  }, []);
+        if (error) throw error;
+
+        dispatch({
+          type: ActionTypes.UPDATE_PRODUCT,
+          payload: { id, updates: data },
+        });
+        return data;
+      } catch (err) {
+        dispatch({ type: ActionTypes.FETCH_ERROR, payload: err.message });
+        return null;
+      }
+    },
+    [isAuthenticated]
+  );
 
   // --- Delete product ---
-  const deleteProduct = useCallback(async (id) => {
-    try {
-      dispatch({ type: ActionTypes.FETCH_START });
+  const deleteProduct = useCallback(
+    async (id) => {
+      if (!isAuthenticated) {
+        dispatch({ type: ActionTypes.FETCH_ERROR, payload: "Not authorized" });
+        return false;
+      }
 
-      const { error } = await supabase.from("products").delete().eq("id", id);
+      try {
+        dispatch({ type: ActionTypes.FETCH_START });
 
-      if (error) throw error;
+        const { error } = await supabase.from("products").delete().eq("id", id);
 
-      dispatch({ type: ActionTypes.DELETE_PRODUCT, payload: id });
-      return true;
-    } catch (err) {
-      dispatch({ type: ActionTypes.FETCH_ERROR, payload: err.message });
-      return false;
-    }
-  }, []);
+        if (error) throw error;
+
+        dispatch({ type: ActionTypes.DELETE_PRODUCT, payload: id });
+        return true;
+      } catch (err) {
+        dispatch({ type: ActionTypes.FETCH_ERROR, payload: err.message });
+        return false;
+      }
+    },
+    [isAuthenticated]
+  );
 
   // Auto-fetch on mount
   useEffect(() => {

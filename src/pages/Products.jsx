@@ -26,7 +26,7 @@ const Products = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [viewMode, setViewMode] = useState('grid');
   const [showFilters, setShowFilters] = useState(false);
-  const [localFilters, setLocalFilters] = useState({ category: 'all', minPrice: null, maxPrice: null, inStock: false });
+  const [localFilters, setLocalFilters] = useState({ category: 'all', minPrice: null, maxPrice: null, in_stock: false });
   const [sortBy, setSortBy] = useState('date-desc');
 
   // Handle sort change
@@ -107,8 +107,8 @@ const Products = () => {
       });
     }
 
-    if (localFilters.inStock) {
-      out = out.filter(p => !!p.inStock);
+    if (localFilters.in_stock) {
+      out = out.filter(p => !!p.in_stock);
     }
 
     // 4) sorting
@@ -157,7 +157,7 @@ const Products = () => {
 
   const clearFilters = () => {
     setSearchTerm('');
-    setLocalFilters({ category: 'all', minPrice: null, maxPrice: null, inStock: false });
+    setLocalFilters({ category: 'all', minPrice: null, maxPrice: null, in_stock: false });
     setSortBy('date-desc');
     setSelectedCategory(null);
   };
@@ -280,7 +280,7 @@ const Products = () => {
                     <div className="text-gray-600">Categories</div>
                   </div>
                   <div>
-                    <div className="text-3xl font-bold text-gold-primary mb-2">{products.filter(p => p.inStock).length}</div>
+                    <div className="text-3xl font-bold text-gold-primary mb-2">{products.filter(p => p.in_stock).length}</div>
                     <div className="text-gray-600">In Stock</div>
                   </div>
                 </div>

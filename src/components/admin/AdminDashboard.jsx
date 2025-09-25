@@ -14,7 +14,7 @@ const AdminDashboard = () => {
   const [error, setError] = useState(null);
   const [stats, setStats] = useState({
     total: 0,
-    inStock: 0,
+    in_stock: 0,
     featured: 0,
     categories: 0
   });
@@ -23,7 +23,7 @@ const AdminDashboard = () => {
     if (products) {
       setStats({
         total: products.length,
-        inStock: products.filter(p => p.inStock).length,
+        in_stock: products.filter(p => p.in_stock).length,
         featured: products.filter(p => p.featured).length,
         categories: new Set(products.map(p => p.category)).size
       });
@@ -67,7 +67,7 @@ const AdminDashboard = () => {
           <div className="text-gray-600">Total Products</div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm">
-          <div className="text-3xl font-bold text-gold-primary">{stats.inStock}</div>
+          <div className="text-3xl font-bold text-gold-primary">{stats.in_stock}</div>
           <div className="text-gray-600">In Stock</div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -149,7 +149,7 @@ const AdminDashboard = () => {
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h3 className="text-lg text-gray-600">In Stock</h3>
-              <p className="text-3xl font-bold text-green-600">{stats.inStock}</p>
+              <p className="text-3xl font-bold text-green-600">{stats.in_stock}</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h3 className="text-lg text-gray-600">Featured</h3>

@@ -21,13 +21,11 @@ export const AdminProvider = ({ children }) => {
     });
 
     // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+  setSession(session);
+});
 
-    return () => subscription.unsubscribe();
+return () => listener.subscription.unsubscribe();
 
   }, []);
 

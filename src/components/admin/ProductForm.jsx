@@ -20,7 +20,7 @@ const ProductForm = ({ product, onClose, onSave, setError: setParentError }) => 
     price: '',
     description: '',
     category: PRODUCT_CATEGORIES[0],
-    inStock: true,
+    in_stock: true,
     featured: false,
     image: '',
     tags: [],
@@ -180,8 +180,8 @@ const ProductForm = ({ product, onClose, onSave, setError: setParentError }) => 
           <label className="flex items-center">
             <input
               type="checkbox"
-              name="inStock"
-              checked={formData.inStock}
+              name="in_stock"
+              checked={formData.in_stock}
               onChange={handleChange}
               className="rounded border-gray-300 text-gold-primary focus:ring-gold-primary"
             />
@@ -298,8 +298,8 @@ const ProductForm = ({ product, onClose, onSave, setError: setParentError }) => 
           <label className="flex items-center">
             <input
               type="checkbox"
-              name="inStock"
-              checked={formData.inStock}
+              name="in_stock"
+              checked={formData.in_stock}
               onChange={handleChange}
               className="form-checkbox h-4 w-4 text-gold-primary"
             />

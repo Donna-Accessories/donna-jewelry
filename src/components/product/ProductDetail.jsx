@@ -53,9 +53,9 @@ export default function ProductDetail() {
         {/* Product Image */}
         <div className="flex flex-col gap-4">
           <img
-            src={product.image || "/placeholder.jpg"}
+            src={product.image}
             alt={product.title}
-            className="rounded-2xl shadow-lg object-cover w-full h-96"
+            className="rounded-2xl shadow-lg object-cover w-full h-full"
           />
 
           {/* WhatsApp Button */}
