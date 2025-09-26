@@ -1,0 +1,105 @@
+├── .env
+├── .env.example
+├── /.git/
+├── /.github/
+├── .gitignore
+├── /dist/
+│  ├── 404.html
+│  ├── /assets/
+│  │  ├── About-BkVGSgA4.js
+│  │  ├── About-BkVGSgA4.js.map
+│  │  ├── Admin-Bo5D7r4V.js
+│  │  ├── Admin-Bo5D7r4V.js.map
+│  │  ├── index-DQrvK30F.css
+│  │  ├── index-DYaJ7eIQ.js
+│  │  ├── index-DYaJ7eIQ.js.map
+│  │  ├── ProductDetail-DyCeIvMA.js
+│  │  ├── ProductDetail-DyCeIvMA.js.map
+│  │  ├── react-vendor-BjsRxVnO.js
+│  │  ├── react-vendor-BjsRxVnO.js.map
+│  │  ├── ui-vendor-BORD6Oou.js
+│  │  └── ui-vendor-BORD6Oou.js.map
+│  ├── donna_jewelry_doc.md
+│  ├── index.html
+│  ├── placeholder.jpg
+│  └── vite.svg
+├── eslint.config.js
+├── index.html
+├── /node_modules/
+├── package-lock.json
+├── package.json
+├── postcss.config.cjs
+├── /public/
+│  ├── 404.html
+│  ├── donna_jewelry_doc.md
+│  ├── placeholder.jpg
+│  └── vite.svg
+├── README.md
+├── /src/
+│  ├── App.jsx
+│  ├── /assets/
+│  │  └── react.svg
+│  ├── /components/
+│  │  ├── /admin/
+│  │  │  ├── AdminDashboard.jsx
+│  │  │  ├── AdminLogin.jsx
+│  │  │  ├── ImageUpload.jsx
+│  │  │  ├── ProductForm.jsx
+│  │  │  ├── ProductTable.jsx
+│  │  │  └── ProtectedRoute.jsx
+│  │  ├── /layout/
+│  │  │  ├── Footer.jsx
+│  │  │  ├── Header.jsx
+│  │  │  └── Layout.jsx
+│  │  ├── /product/
+│  │  │  ├── ProductCard.jsx
+│  │  │  ├── ProductDetail.jsx
+│  │  │  ├── ProductGrid.jsx
+│  │  │  ├── ProductImage.jsx
+│  │  │  └── WhatsAppButton.jsx
+│  │  ├── /search/
+│  │  │  ├── FilterPanel.jsx
+│  │  │  ├── SearchBar.jsx
+│  │  │  └── SortOptions.jsx
+│  │  ├── /ui/
+│  │  │  ├── Button.jsx
+│  │  │  ├── LoadingSpinner.jsx
+│  │  │  ├── Modal.jsx
+│  │  │  └── Pagination.jsx
+│  ├── /contexts/
+│  │  ├── AdminContext.jsx
+│  │  ├── AuthContext.jsx
+│  │  ├── ProductContext.jsx
+│  │  └── SearchContext.jsx
+│  ├── /data/
+│  ├── /hooks/
+│  │  ├── useImageUpload.js
+│  │  ├── usePagination.js
+│  │  ├── useProducts.js
+│  │  ├── useSearch.js
+│  │  └── useSupabase.js
+│  ├── index.css
+│  ├── main.jsx
+│  ├── /pages/
+│  │  ├── About.jsx
+│  │  ├── Admin.jsx
+│  │  ├── Home.jsx
+│  │  └── Products.jsx
+│  ├── router.jsx
+│  ├── /styles/
+│  │  ├── components.css
+│  │  ├── global.css
+│  │  └── globals.css
+│  ├── /utils/
+│  │  ├── constants.js
+│  │  ├── github-api.js
+│  │  ├── helpers.js
+│  │  ├── image-utils.js
+│  │  ├── routes.js
+│  │  ├── supabaseClient.js
+│  │  └── whatsapp.js
+├── /supabase/
+│  ├── schema.sql
+│  └── seed.sql
+├── tailwind.config.js
+└── vite.config.js

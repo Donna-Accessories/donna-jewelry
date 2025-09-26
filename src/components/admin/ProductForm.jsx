@@ -24,7 +24,7 @@ const ProductForm = ({ product, onClose, onSave, setError: setParentError }) => 
     featured: false,
     image: '',
     tags: [],
-    ...(product || {}) // Pre-fill values if editing
+    ...(product || {}) // Pre-fill if editing
   });
 
   const handleChange = (e) => {
@@ -44,18 +44,18 @@ const ProductForm = ({ product, onClose, onSave, setError: setParentError }) => 
     try {
       setLoading(true);
       setError(null);
-      setParentError(null);
+      setParentError?.(null);
 
-      // Validate required fields
       if (!formData.title || !formData.price || !formData.category) {
         throw new Error('Please fill in all required fields');
       }
 
-      // Format data for Supabase
       const productData = {
         ...formData,
         price: parseFloat(formData.price),
-        tags: Array.isArray(formData.tags) ? formData.tags : formData.tags.split(',').map(t => t.trim()),
+        tags: Array.isArray(formData.tags)
+          ? formData.tags
+          : formData.tags.split(',').map(t => t.trim()),
         date_added: formData.date_added || new Date().toISOString(),
         last_modified: new Date().toISOString()
       };
@@ -86,150 +86,17 @@ const ProductForm = ({ product, onClose, onSave, setError: setParentError }) => 
         <div className="bg-red-50 text-red-600 p-4 rounded mb-4">
           {error}
         </div>
-        )}
+      )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Title *
-            </label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-primary focus:border-transparent"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Price *
-            </label>
-            <input
-              type="number"
-              name="price"
-              step="0.01"
-              value={formData.price}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-primary focus:border-transparent"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Category *
-            </label>
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-primary focus:border-transparent"
-              required
-            >
-              {PRODUCT_CATEGORIES.map(category => (
-                <option key={category} value={category.toLowerCase()}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Tags (comma-separated)
-            </label>
-            <input
-              type="text"
-              name="tags"
-              value={Array.isArray(formData.tags) ? formData.tags.join(', ') : formData.tags}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-primary focus:border-transparent"
-              placeholder="gold, necklace, handmade"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Description
-          </label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            rows={4}
-            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-gold-primary focus:border-transparent"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Product Image
-          </label>
-          <ImageUpload
-            currentImage={formData.image}
-            onUpload={handleImageUpload}
-            loading={loading}
-          />
-        </div>
-
-        <div className="flex gap-4">
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              name="in_stock"
-              checked={formData.in_stock}
-              onChange={handleChange}
-              className="rounded border-gray-300 text-gold-primary focus:ring-gold-primary"
-            />
-            <span className="ml-2">In Stock</span>
-          </label>
-
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              name="featured"
-              checked={formData.featured}
-              onChange={handleChange}
-              className="rounded border-gray-300 text-gold-primary focus:ring-gold-primary"
-            />
-            <span className="ml-2">Featured</span>
-          </label>
-        </div>
-
-        <div className="flex justify-end gap-4">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 border rounded-lg hover:bg-gray-50"
-            disabled={loading}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={loading}
-            className={`px-4 py-2 rounded-lg text-white font-medium
-              ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gold-primary hover:bg-gold-600'}
-            `}
-          >
-            {loading ? 'Saving...' : product ? 'Update Product' : 'Add Product'}
-          </button>
-        </div>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <ImageUpload
-            currentImage={formData.image}
-            onUpload={handleImageUpload}
-            loading={loading}
-          />
-        </div>
+        <ImageUpload
+          currentImage={formData.image}
+          onUpload={handleImageUpload}
+          loading={loading}
+        />
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Title</label>
+          <label className="block text-sm font-medium text-gray-700">Title *</label>
           <input
             type="text"
             name="title"
@@ -241,10 +108,11 @@ const ProductForm = ({ product, onClose, onSave, setError: setParentError }) => 
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Price</label>
+          <label className="block text-sm font-medium text-gray-700">Price *</label>
           <input
             type="number"
             name="price"
+            step="0.01"
             value={formData.price}
             onChange={handleChange}
             className="input-premium mt-1"
@@ -253,7 +121,7 @@ const ProductForm = ({ product, onClose, onSave, setError: setParentError }) => 
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">Category</label>
+          <label className="block text-sm font-medium text-gray-700">Category *</label>
           <select
             name="category"
             value={formData.category}

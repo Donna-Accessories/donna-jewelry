@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAdminContext } from '../../contexts/AdminContext.jsx';
 import { useProducts } from '../../hooks/useProducts';
-import { useSupabase } from '../../hooks/useSupabase';
 import ProductForm from './ProductForm';
 import ProductTable from './ProductTable';
 import LoadingSpinner from '../ui/LoadingSpinner';
@@ -60,45 +59,6 @@ const AdminDashboard = () => {
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <div className="text-3xl font-bold text-gold-primary">{stats.total}</div>
-          <div className="text-gray-600">Total Products</div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <div className="text-3xl font-bold text-gold-primary">{stats.in_stock}</div>
-          <div className="text-gray-600">In Stock</div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <div className="text-3xl font-bold text-gold-primary">{stats.featured}</div>
-          <div className="text-gray-600">Featured</div>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <div className="text-3xl font-bold text-gold-primary">{stats.categories}</div>
-          <div className="text-gray-600">Categories</div>
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="flex justify-between items-center mb-6">
-        <button
-          onClick={() => {
-            setEditingProduct(null);
-            setShowAddForm(true);
-          }}
-          className="px-4 py-2 bg-gold-primary text-white rounded-lg hover:bg-gold-600"
-        >
-          Add New Product
-        </button>
-        <button
-          onClick={refresh}
-          className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-        >
-          Refresh Data
-        </button>
-      </div>
-
       {error && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
           {error}
@@ -114,33 +74,9 @@ const AdminDashboard = () => {
             refresh();
           }}
           setError={setError}
-          onSubmit={handleFormClose}
-          onCancel={handleFormClose}
         />
       ) : (
         <div className="space-y-8">
-          {/* Header */}
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gold-primary">Admin Dashboard</h1>
-              <p className="text-gray-600">Manage your jewelry catalog</p>
-            </div>
-            <div className="space-x-4">
-              <button
-                onClick={() => setShowAddForm(true)}
-                className="btn-primary"
-              >
-                Add New Product
-              </button>
-              <button
-                onClick={logout}
-                className="btn-secondary"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -161,8 +97,27 @@ const AdminDashboard = () => {
             </div>
           </div>
 
+          {/* Actions */}
+          <div className="flex justify-between items-center">
+            <button
+              onClick={() => {
+                setEditingProduct(null);
+                setShowAddForm(true);
+              }}
+              className="px-4 py-2 bg-gold-primary text-white rounded-lg hover:bg-gold-600"
+            >
+              Add New Product
+            </button>
+            <button
+              onClick={refresh}
+              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              Refresh Data
+            </button>
+          </div>
+
           {/* Product Table */}
-          <ProductTable onEdit={handleEditClick} />
+          <ProductTable products={products} onEdit={handleEditClick} />
         </div>
       )}
     </div>
