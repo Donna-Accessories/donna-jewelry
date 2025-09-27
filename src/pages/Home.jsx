@@ -78,7 +78,7 @@ const Home = () => {
             {/* Call to Action */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
-                to="/products"
+                to="/donna-jewelry/products"
                 className="
                   bg-gold-primary hover:bg-gold-600 
                   text-white px-8 py-4 rounded-lg 
