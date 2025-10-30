@@ -130,7 +130,7 @@ const Products = () => {
         break;
       case 'date-desc':
       default:
-        out.sort((a, b) => new Date(b.dateAdded || 0) - new Date(a.dateAdded || 0));
+        out.sort((a, b) => new Date(b.dateAdded || b.date_added || 0) - new Date(a.dateAdded || a.date_added || 0));
         break;
     }
 

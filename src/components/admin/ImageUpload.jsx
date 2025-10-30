@@ -1,10 +1,9 @@
 import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useSupabase } from '../../hooks/useSupabase';
+import supabase from '../../utils/supabaseClient';
 import LoadingSpinner from '../ui/LoadingSpinner';
 
 const ImageUpload = ({ currentImage, onUpload, loading: parentLoading }) => {
-  const { supabase } = useSupabase();
   const [uploading, setUploading] = useState(false);
 
   const onDrop = useCallback(
@@ -15,22 +14,21 @@ const ImageUpload = ({ currentImage, onUpload, loading: parentLoading }) => {
       try {
         setUploading(true);
 
-        // unique file name
+        // Create unique file name
         const fileExt = file.name.split('.').pop();
         const fileName = `${Date.now()}.${fileExt}`;
-        const filePath = `product-images/${fileName}`;
 
-        // upload to Supabase storage
+        // Upload directly to the "product-images" bucket
         const { error: uploadError } = await supabase.storage
           .from('product-images')
-          .upload(filePath, file);
+          .upload(fileName, file);
 
         if (uploadError) throw uploadError;
 
-        // get public URL
+        // Get public URL
         const { data } = supabase.storage
           .from('product-images')
-          .getPublicUrl(filePath);
+          .getPublicUrl(fileName);
 
         onUpload(data.publicUrl);
       } catch (err) {
@@ -56,7 +54,7 @@ const ImageUpload = ({ currentImage, onUpload, loading: parentLoading }) => {
 
   return (
     <div className="space-y-4">
-      {/* Preview */}
+      {/* Image preview */}
       {currentImage && (
         <div className="relative w-full h-48 rounded-lg overflow-hidden">
           <img
@@ -72,11 +70,14 @@ const ImageUpload = ({ currentImage, onUpload, loading: parentLoading }) => {
         </div>
       )}
 
-      {/* Dropzone */}
+      {/* Upload dropzone */}
       <div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-gold-primary
-          ${isDragActive ? 'border-gold-primary bg-gold-50' : 'border-gray-300 hover:border-gold-primary'}`}
+        className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-gold-primary ${
+          isDragActive
+            ? 'border-gold-primary bg-gold-50'
+            : 'border-gray-300 hover:border-gold-primary'
+        }`}
       >
         <input {...getInputProps()} aria-label="Upload product image" />
         {isLoading ? (
@@ -89,7 +90,7 @@ const ImageUpload = ({ currentImage, onUpload, loading: parentLoading }) => {
                 : 'Drag & drop an image, or click to select'}
             </p>
             <p className="text-xs text-gray-500 mt-2">
-              JPG, PNG or WebP (max. 5MB)
+              JPG, PNG, or WebP (max. 5MB)
             </p>
           </div>
         )}

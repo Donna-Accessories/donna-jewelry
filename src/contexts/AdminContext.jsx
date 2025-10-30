@@ -5,7 +5,26 @@ const AdminContext = createContext();
 
 export const useAdminContext = () => {
   const ctx = useContext(AdminContext);
-  if (!ctx) throw new Error("useAdminContext must be used inside AdminProvider");
+  if (!ctx) {
+    // Don't hard-throw — return a safe fallback so components can render
+    // and we can surface a helpful dev-time warning instead.
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.warn(
+        'useAdminContext called outside AdminProvider. Wrap your app with <AdminProvider> or check provider mount order.'
+      );
+    }
+
+    // Safe fallback: minimal shape used by consumers to avoid runtime crashes.
+    return {
+      session: null,
+      setSession: () => {},
+      user: null,
+      isAuthenticated: false,
+      logout: async () => {},
+      loading: false,
+    };
+  }
   return ctx;
 };
 
@@ -13,21 +32,45 @@ export const AdminProvider = ({ children }) => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-    });
+useEffect(() => {
+  let mounted = true;
 
-    // Listen for auth changes
-const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-  setSession(session);
-});
+  // Try to restore saved session (waits properly)
+  const loadSession = async () => {
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const session = sessionData?.session ?? null;
+      if (mounted) {
+        setSession(session);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error('Error restoring session:', err);
+      if (mounted) setLoading(false);
+    }
+  };
 
-return () => listener.subscription.unsubscribe();
+  loadSession();
 
-  }, []);
+  // Listen for login/logout events and update automatically
+  const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+    if (mounted) setSession(session);
+  });
+
+  const subscription = data?.subscription;
+
+  // Clean up listener when component unmounts
+  return () => {
+    mounted = false;
+    try {
+      if (subscription && typeof subscription.unsubscribe === 'function') {
+        subscription.unsubscribe();
+      }
+    } catch (err) {
+      console.warn('Failed to unsubscribe auth listener:', err);
+    }
+  };
+}, []);
 
   const logout = async () => {
     try {

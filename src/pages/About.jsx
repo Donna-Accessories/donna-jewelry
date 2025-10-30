@@ -124,7 +124,7 @@ export default function About() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              to="/products"
+              to="/donna-jewelry/products"
               className="bg-white text-gold-primary hover:bg-gray-50 px-8 py-4 rounded-lg font-semibold text-lg transform hover:scale-105 transition-all shadow-lg"
             >
               Explore Collection

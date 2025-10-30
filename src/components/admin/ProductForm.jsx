@@ -35,7 +35,7 @@ const ProductForm = ({ product, onClose, onSave, setError: setParentError }) => 
     }));
   };
 
-  const handleImageUpload = async (imageUrl) => {
+  const handleImageUpload = (imageUrl) => {
     setFormData(prev => ({ ...prev, image: imageUrl }));
   };
 
@@ -59,7 +59,7 @@ const ProductForm = ({ product, onClose, onSave, setError: setParentError }) => 
         date_added: formData.date_added || new Date().toISOString(),
         last_modified: new Date().toISOString()
       };
-
+      
       if (product?.id) {
         await updateProduct(product.id, productData);
       } else {
@@ -77,56 +77,65 @@ const ProductForm = ({ product, onClose, onSave, setError: setParentError }) => 
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg mx-auto">
-      <h2 className="text-2xl font-bold mb-6 text-gold-primary">
+    <div className="bg-white border border-gray-200 shadow-md rounded-2xl p-8 w-full max-w-2xl mx-auto">
+      {/* Header */}
+      <h2 className="text-2xl font-bold mb-6 text-gold-primary text-center border-b border-gray-200 pb-3">
         {product ? 'Edit Product' : 'Add New Product'}
       </h2>
 
+      {/* Error Message */}
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded mb-4">
+        <div className="bg-red-50 text-red-700 border border-red-200 p-4 rounded-lg mb-4">
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <ImageUpload
-          currentImage={formData.image}
-          onUpload={handleImageUpload}
-          loading={loading}
-        />
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Image Upload */}
+        <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+          <h3 className="text-sm font-semibold text-gray-700 mb-2">Product Image</h3>
+          <ImageUpload
+            currentImage={formData.image}
+            onUpload={handleImageUpload}
+            loading={loading}
+          />
+        </div>
 
+        {/* Title */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Title *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
           <input
             type="text"
             name="title"
             value={formData.title}
             onChange={handleChange}
-            className="input-premium mt-1"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-primary focus:border-gold-primary transition"
             required
           />
         </div>
 
+        {/* Price */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Price *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Price *</label>
           <input
             type="number"
             name="price"
             step="0.01"
             value={formData.price}
             onChange={handleChange}
-            className="input-premium mt-1"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-primary focus:border-gold-primary transition"
             required
           />
         </div>
 
+        {/* Category */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Category *</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
           <select
             name="category"
             value={formData.category}
             onChange={handleChange}
-            className="input-premium mt-1"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-primary focus:border-gold-primary transition"
             required
           >
             {PRODUCT_CATEGORIES.map(category => (
@@ -137,19 +146,21 @@ const ProductForm = ({ product, onClose, onSave, setError: setParentError }) => 
           </select>
         </div>
 
+        {/* Description */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">Description</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
           <textarea
             name="description"
             value={formData.description}
             onChange={handleChange}
             rows={4}
-            className="input-premium mt-1"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-primary focus:border-gold-primary transition"
           />
         </div>
 
+        {/* Tags */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             Tags (comma-separated)
           </label>
           <input
@@ -157,19 +168,20 @@ const ProductForm = ({ product, onClose, onSave, setError: setParentError }) => 
             name="tags"
             value={Array.isArray(formData.tags) ? formData.tags.join(', ') : formData.tags}
             onChange={handleChange}
-            className="input-premium mt-1"
             placeholder="gold, necklace, handmade"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-gold-primary focus:border-gold-primary transition"
           />
         </div>
 
-        <div className="flex items-center space-x-4">
+        {/* Checkboxes */}
+        <div className="flex items-center justify-between border-t border-gray-200 pt-4">
           <label className="flex items-center">
             <input
               type="checkbox"
               name="in_stock"
               checked={formData.in_stock}
               onChange={handleChange}
-              className="form-checkbox h-4 w-4 text-gold-primary"
+              className="form-checkbox h-4 w-4 text-gold-primary border-gray-300 rounded"
             />
             <span className="ml-2 text-sm text-gray-700">In Stock</span>
           </label>
@@ -180,24 +192,25 @@ const ProductForm = ({ product, onClose, onSave, setError: setParentError }) => 
               name="featured"
               checked={formData.featured}
               onChange={handleChange}
-              className="form-checkbox h-4 w-4 text-gold-primary"
+              className="form-checkbox h-4 w-4 text-gold-primary border-gray-300 rounded"
             />
             <span className="ml-2 text-sm text-gray-700">Featured</span>
           </label>
         </div>
 
+        {/* Buttons */}
         <div className="flex space-x-4 pt-4">
           <button
             type="button"
             onClick={onClose}
-            className="btn-secondary flex-1"
+            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition disabled:opacity-60"
             disabled={loading}
           >
             Cancel
           </button>
-          <button 
-            type="submit" 
-            className="btn-primary flex-1" 
+          <button
+            type="submit"
+            className="flex-1 px-4 py-2 bg-gold-primary text-white rounded-lg hover:bg-gold-600 transition disabled:opacity-60"
             disabled={loading}
           >
             {loading ? 'Saving...' : product ? 'Save Changes' : 'Add Product'}

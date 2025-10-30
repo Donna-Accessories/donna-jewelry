@@ -18,72 +18,61 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4">
         {/* Logo + Navigation */}
         <div className="flex items-center justify-between">
-          {/* Brand Logo */}
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-yellow-400">DONNA</h1>
-            <p className="text-sm text-yellow-300 tracking-wide">
-              JEWELLERY & ACCESSORIES
-            </p>
+          {/* Brand Logo (left) */}
+          <div className="flex items-center flex-shrink-0">
+            <div className="mr-3">
+              <div className="inline-flex items-center justify-center w-12 h-12 bg-yellow-400 rounded-full">
+                <svg className="w-6 h-6 text-blue-900" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L15 8l6 .5-4.5 3 1.5 6L12 15l-6 3 1.5-6L3 8.5 9 8 12 2z" />
+                </svg>
+              </div>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-yellow-400">DONNA</h1>
+              <p className="text-xs text-yellow-300 tracking-wide">JEWELLERY & ACCESSORIES</p>
+            </div>
           </div>
 
-          {/* Navigation Menu */}
-          <nav className="hidden md:flex space-x-8">
+          {/* Navigation Menu (center on desktop) */}
+          <nav className="hidden md:flex space-x-8 flex-1 justify-center" role="navigation" aria-label="Main">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.to}
-                className={`relative group transition-colors duration-300 ${
-                  location.pathname === link.to ? 'text-yellow-400' : ''
+                onClick={() => setMobileOpen(false)}
+                className={`relative group transition-colors duration-300 px-2 py-1 ${
+                  location.pathname === link.to ? 'text-yellow-400' : 'text-white'
                 }`}
               >
                 {link.name}
                 <span className={`absolute left-0 -bottom-1 h-0.5 bg-yellow-400 transition-all duration-300 ${
                   location.pathname === link.to ? 'w-full' : 'w-0 group-hover:w-full'
-                }`}></span>
+                }`} />
               </Link>
             ))}
           </nav>
 
-          {/* Contact Info */}
+          {/* Contact Info (right) */}
           <div className="hidden lg:block text-right">
             <p className="text-sm text-yellow-300">Contact us:</p>
             <p className="text-yellow-400 font-semibold">+233 24 862 8880</p>
             <p className="text-sm text-yellow-300">@donna_accessoriess</p>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button (right) */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="md:hidden text-yellow-400 focus:outline-none"
             aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
           >
             {mobileOpen ? (
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             ) : (
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             )}
           </button>
@@ -92,26 +81,30 @@ const Header = () => {
         {/* Mobile Menu */}
         {mobileOpen && (
           <motion.nav
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.22 }}
             className="md:hidden mt-4 pt-4 border-t border-blue-800"
+            role="navigation"
+            aria-label="Mobile"
           >
-            <div className="flex flex-col space-y-3">
+            <div className="flex flex-col space-y-3 px-2">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.name}
-                  href={link.href}
-                  className="hover:text-yellow-400 transition-colors duration-300"
+                  to={link.to}
+                  onClick={() => setMobileOpen(false)}
+                  className={`block w-full px-3 py-2 rounded text-white hover:text-yellow-400 transition-colors duration-200 ${
+                    location.pathname === link.to ? 'bg-blue-800' : ''
+                  }`}
                 >
                   {link.name}
-                </a>
+                </Link>
               ))}
+
               <div className="pt-3 border-t border-blue-800 text-yellow-300">
                 <p className="text-sm">Contact us:</p>
-                <p className="text-yellow-400 font-semibold">
-                  +233 24 862 8880
-                </p>
+                <p className="text-yellow-400 font-semibold">+233 24 862 8880</p>
                 <p className="text-sm">@donna_accessoriess</p>
               </div>
             </div>

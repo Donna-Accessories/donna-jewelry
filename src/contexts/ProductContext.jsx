@@ -8,6 +8,8 @@ import React, {
 } from "react";
 import supabase from "../utils/supabaseClient"; // ✅ default export
 import { useAdminContext } from "./AdminContext";
+import { debugLog, logError } from "../utils/debug";
+import { formatProduct } from "../data/types";
 
 // Initial state
 const initialState = {
@@ -154,18 +156,46 @@ const ProductProvider = ({ children }) => {
 
       dispatch({ type: ActionTypes.FETCH_START });
       try {
-        const { data: products, error: productsError } = await supabase
-          .from("products")
-          .select("*")
-          .order("date_added", { ascending: false });
+        // Log current auth session to help diagnose RLS / auth issues
+        try {
+          const { data: sessionData } = await supabase.auth.getSession();
+          debugLog('ProductContext', 'currentSession', sessionData?.session || null);
+        } catch (sessionErr) {
+          debugLog('ProductContext', 'sessionCheckError', { message: sessionErr?.message || String(sessionErr) });
+        }
 
-        if (productsError) throw productsError;
+        const { data: productsRaw, error: productsError, status, statusText } =
+          await supabase
+            .from("products")
+            .select("*")
+            .order("date_added", { ascending: false });
+
+        debugLog("ProductContext", "fetchProducts response", {
+          status,
+          statusText,
+          productsError,
+          productsCount: productsRaw?.length || 0,
+        });
+
+        if (productsError) {
+          // Detect RLS-related errors and throw a clearer message
+          const msg = productsError.message || String(productsError);
+          if (msg.toLowerCase().includes("row-level")) {
+            throw new Error(
+              "Row-level security prevented fetching products. Check Supabase table policies."
+            );
+          }
+          throw productsError;
+        }
 
         const { data: categoryData, error: categoriesError } = await supabase
           .from("categories")
           .select("name");
 
         if (categoriesError) throw categoriesError;
+
+        // Normalize products using formatProduct helper
+        const products = (productsRaw || []).map((p) => formatProduct(p));
 
         const categories = categoryData
           ? categoryData.map((c) => c.name.toLowerCase()).sort()
@@ -182,9 +212,11 @@ const ProductProvider = ({ children }) => {
           payload: { products: products || [], categories },
         });
       } catch (err) {
+        logError("ProductContext.fetchProducts", err, { isAuthenticated });
         dispatch({
           type: ActionTypes.FETCH_ERROR,
-          payload: err.message || "Failed to load products",
+          payload:
+            err.message || "Failed to load products (check Supabase connection / policies)",
         });
       }
     },
@@ -200,8 +232,12 @@ const ProductProvider = ({ children }) => {
       }
 
       try {
+        // Log current auth session before attempting to insert
+        try {
+          const { data: sessionData } = await supabase.auth.getSession();
+          debugLog('ProductContext', 'currentSessionBeforeInsert', sessionData?.session || null);
+        } catch (_) {}
         dispatch({ type: ActionTypes.FETCH_START });
-
         const newProduct = {
           ...productData,
           in_stock: productData.in_stock ?? true,
@@ -220,7 +256,18 @@ const ProductProvider = ({ children }) => {
         dispatch({ type: ActionTypes.ADD_PRODUCT, payload: data });
         return data;
       } catch (err) {
-        dispatch({ type: ActionTypes.FETCH_ERROR, payload: err.message });
+        logError("ProductContext.addProduct", err, { productData });
+        // Detect RLS insertion errors
+        const message = err?.message || String(err);
+        if (message.toLowerCase().includes("row-level")) {
+          dispatch({
+            type: ActionTypes.FETCH_ERROR,
+            payload:
+              "Insert blocked by Row Level Security. Make sure authenticated user or policies are configured.",
+          });
+        } else {
+          dispatch({ type: ActionTypes.FETCH_ERROR, payload: message });
+        }
         return null;
       }
     },
@@ -236,6 +283,11 @@ const ProductProvider = ({ children }) => {
       }
 
       try {
+        // Log current auth session before attempting to update
+        try {
+          const { data: sessionData } = await supabase.auth.getSession();
+          debugLog('ProductContext', 'currentSessionBeforeUpdate', sessionData?.session || null);
+        } catch (_) {}
         dispatch({ type: ActionTypes.FETCH_START });
 
         const { data, error } = await supabase
@@ -253,7 +305,17 @@ const ProductProvider = ({ children }) => {
         });
         return data;
       } catch (err) {
-        dispatch({ type: ActionTypes.FETCH_ERROR, payload: err.message });
+        logError("ProductContext.updateProduct", err, { id, updates });
+        const message = err?.message || String(err);
+        if (message.toLowerCase().includes("row-level")) {
+          dispatch({
+            type: ActionTypes.FETCH_ERROR,
+            payload:
+              "Update blocked by Row Level Security. Ensure your Supabase policies allow this operation.",
+          });
+        } else {
+          dispatch({ type: ActionTypes.FETCH_ERROR, payload: message });
+        }
         return null;
       }
     },
@@ -269,6 +331,11 @@ const ProductProvider = ({ children }) => {
       }
 
       try {
+        // Log current auth session before attempting to delete
+        try {
+          const { data: sessionData } = await supabase.auth.getSession();
+          debugLog('ProductContext', 'currentSessionBeforeDelete', sessionData?.session || null);
+        } catch (_) {}
         dispatch({ type: ActionTypes.FETCH_START });
 
         const { error } = await supabase.from("products").delete().eq("id", id);
@@ -278,7 +345,17 @@ const ProductProvider = ({ children }) => {
         dispatch({ type: ActionTypes.DELETE_PRODUCT, payload: id });
         return true;
       } catch (err) {
-        dispatch({ type: ActionTypes.FETCH_ERROR, payload: err.message });
+        logError("ProductContext.deleteProduct", err, { id });
+        const message = err?.message || String(err);
+        if (message.toLowerCase().includes("row-level")) {
+          dispatch({
+            type: ActionTypes.FETCH_ERROR,
+            payload:
+              "Delete blocked by Row Level Security. Ensure your Supabase policies allow deletes for admins.",
+          });
+        } else {
+          dispatch({ type: ActionTypes.FETCH_ERROR, payload: message });
+        }
         return false;
       }
     },
