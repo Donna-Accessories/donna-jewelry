@@ -1,6 +1,7 @@
 // src/components/product/ProductCard.jsx
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import routes from "../../utils/routes";
 import ProductImage from "./ProductImage";
 
 export default function ProductCard({ product }) {
@@ -10,7 +11,7 @@ export default function ProductCard({ product }) {
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       className="bg-white rounded-2xl shadow hover:shadow-lg transition-shadow duration-300"
     >
-      <Link to={`/products/${product.id}`} className="block">
+  <Link to={routes.productDetail(product.id)} className="block">
         {/* Product Image */}
         <ProductImage
           src={product.image}

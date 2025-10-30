@@ -1,6 +1,7 @@
 // src/components/product/ProductDetail.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import routes from "../../utils/routes";
 import { useProductContext } from "../../contexts/ProductContext";
 import WhatsAppButton from "./WhatsAppButton";
 
@@ -100,7 +101,7 @@ export default function ProductDetail() {
               Add to Cart
             </button>
             <Link
-              to="/products"
+              to={routes.products}
               className="border border-gold-primary text-gold-primary hover:bg-gold-primary hover:text-white px-6 py-3 rounded-lg"
             >
               Back to Products
