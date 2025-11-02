@@ -10,9 +10,9 @@ import Home from './pages/Home.jsx';
 import Products from './pages/Products.jsx';
 
 // Context Providers
-import { ProductProvider } from './contexts/ProductContext.jsx';
 import { AdminProvider } from './contexts/AdminContext.jsx';
 import { SearchProvider } from './contexts/SearchContext.jsx';
+import { ProductProvider } from './contexts/ProductContext.jsx';
 
 // Routes
 import routes from './utils/routes.js';// Styles

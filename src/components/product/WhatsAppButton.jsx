@@ -1,8 +1,10 @@
 // src/components/product/WhatsAppButton.jsx
-import React from "react"
+import React from "react";
+import { buildWhatsAppLink } from "../../utils/whatsapp";
 
-export default function WhatsAppButton({ phone = "+233248628880", message = "Hello, I’d like to know more about your jewelry." }) {
-  const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
+export default function WhatsAppButton({ phone, message = "Hello, I’d like to know more about your jewelry." }) {
+  // buildWhatsAppLink uses the app WHATSAPP_NUMBER constant; allow message override
+  const url = buildWhatsAppLink(message);
 
   return (
     <a
@@ -17,5 +19,5 @@ export default function WhatsAppButton({ phone = "+233248628880", message = "Hel
         <path d="M12.004 2C6.476 2 2 6.474 2 12c0 2.116.632 4.08 1.818 5.758L2 22l4.386-1.786A9.942 9.942 0 0012.004 22C17.532 22 22 17.526 22 12S17.532 2 12.004 2zm0 18c-1.928 0-3.73-.564-5.26-1.635l-.376-.257-2.598 1.06.694-2.71-.18-.279A7.96 7.96 0 014.004 12c0-4.411 3.588-8 8-8 4.412 0 8 3.589 8 8s-3.588 8-8 8z" />
       </svg>
     </a>
-  )
+  );
 }

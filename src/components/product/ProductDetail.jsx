@@ -4,6 +4,7 @@ import { useParams, Link } from "react-router-dom";
 import routes from "../../utils/routes";
 import { useProductContext } from "../../contexts/ProductContext";
 import WhatsAppButton from "./WhatsAppButton";
+import { buildWhatsAppLink } from "../../utils/whatsapp";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -21,6 +22,15 @@ export default function ProductDetail() {
       setProduct(p);
     }
   }, [id, getProductById, fetchProducts]);
+
+  // Ensure page is scrolled to top when opening a product detail
+  useEffect(() => {
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    } catch (e) {
+      // ignore in non-browser environments
+    }
+  }, [id]);
 
   if (loading && !product) {
     return (
@@ -97,15 +107,17 @@ export default function ProductDetail() {
 
           {/* Actions */}
           <div className="flex gap-4">
-            <button className="bg-gold-primary hover:bg-gold-600 text-white px-6 py-3 rounded-lg">
-              Add to Cart
-            </button>
-            <Link
-              to={routes.products}
-              className="border border-gold-primary text-gold-primary hover:bg-gold-primary hover:text-white px-6 py-3 rounded-lg"
+            <button
+              onClick={() => {
+                const msg = `Hello, I'm interested in ${product.title} priced at ${product.price}. Is it available?`;
+                const url = buildWhatsAppLink(msg);
+                window.open(url, '_blank', 'noopener');
+              }}
+              className="bg-gold-primary hover:bg-green-600 text-white px-6 py-3 rounded-lg"
             >
-              Back to Products
-            </Link>
+              Shop Now
+            </button>
+
           </div>
         </div>
       </div>

@@ -38,31 +38,7 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-yellow-400 font-semibold mb-4">
-              Quick Links
-            </h3>
-            <ul className="space-y-2">
-              {[
-                { name: "Home", to: routes.home },
-                { name: "All Products", to: routes.products },
-                { name: "Bracelets", to: routes.category('bracelets') },
-                { name: "Necklaces", to: routes.category('necklaces') },
-                { name: "Earrings", to: routes.category('earrings') },
-                { name: "Watches", href: "/watches" },
-              ].map((link) => (
-                <li key={link.name}>
-                  <a
-                    href={link.href}
-                    className="text-gray-300 hover:text-yellow-400 transition-colors duration-300"
-                  >
-                    {link.name}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+         
 
           {/* Contact Info */}
           <div>

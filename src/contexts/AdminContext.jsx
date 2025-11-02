@@ -1,104 +1,71 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import supabase from '../utils/supabaseClient';
+// src/contexts/AdminContext.jsx
+// Simple Admin Context for Donna's Jewelry Store
+// Email: Donna@Jewelry.com
+// Password: Donna123
+
+import React, { createContext, useContext, useReducer, useCallback } from "react";
 
 const AdminContext = createContext();
 
 export const useAdminContext = () => {
   const ctx = useContext(AdminContext);
-  if (!ctx) {
-    // Don't hard-throw — return a safe fallback so components can render
-    // and we can surface a helpful dev-time warning instead.
-    if (process.env.NODE_ENV === 'development') {
-      // eslint-disable-next-line no-console
-      console.warn(
-        'useAdminContext called outside AdminProvider. Wrap your app with <AdminProvider> or check provider mount order.'
-      );
-    }
-
-    // Safe fallback: minimal shape used by consumers to avoid runtime crashes.
-    return {
-      session: null,
-      setSession: () => {},
-      user: null,
-      isAuthenticated: false,
-      logout: async () => {},
-      loading: false,
-    };
-  }
+  if (!ctx) throw new Error("useAdminContext must be used inside AdminProvider");
   return ctx;
 };
 
+const initialState = {
+  isAuthenticated: localStorage.getItem("isAdmin") === "true",
+  error: null,
+};
+
+const ActionTypes = {
+  LOGIN_SUCCESS: "LOGIN_SUCCESS",
+  LOGIN_FAILURE: "LOGIN_FAILURE",
+  LOGOUT: "LOGOUT",
+};
+
+const adminReducer = (state, action) => {
+  switch (action.type) {
+    case ActionTypes.LOGIN_SUCCESS:
+      return { isAuthenticated: true, error: null };
+    case ActionTypes.LOGIN_FAILURE:
+      return { isAuthenticated: false, error: action.payload };
+    case ActionTypes.LOGOUT:
+      return { isAuthenticated: false, error: null };
+    default:
+      return state;
+  }
+};
+
 export const AdminProvider = ({ children }) => {
-  const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [state, dispatch] = useReducer(adminReducer, initialState);
 
-useEffect(() => {
-  let mounted = true;
-
-  // Try to restore saved session (waits properly)
-  const loadSession = async () => {
-    try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const session = sessionData?.session ?? null;
-      if (mounted) {
-        setSession(session);
-        setLoading(false);
-      }
-    } catch (err) {
-      console.error('Error restoring session:', err);
-      if (mounted) setLoading(false);
+  const login = useCallback((email, password) => {
+    if (email === "Donna@Jewelry.com" && password === "Donna123") {
+      localStorage.setItem("isAdmin", "true");
+      dispatch({ type: ActionTypes.LOGIN_SUCCESS });
+      return true;
+    } else {
+      dispatch({ type: ActionTypes.LOGIN_FAILURE, payload: "Invalid credentials" });
+      return false;
     }
-  };
+  }, []);
 
-  loadSession();
-
-  // Listen for login/logout events and update automatically
-  const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-    if (mounted) setSession(session);
-  });
-
-  const subscription = data?.subscription;
-
-  // Clean up listener when component unmounts
-  return () => {
-    mounted = false;
-    try {
-      if (subscription && typeof subscription.unsubscribe === 'function') {
-        subscription.unsubscribe();
-      }
-    } catch (err) {
-      console.warn('Failed to unsubscribe auth listener:', err);
-    }
-  };
-}, []);
-
-  const logout = async () => {
-    try {
-      await supabase.auth.signOut();
-      setSession(null);
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
-  };
-
-  const value = {
-    session,
-    setSession,
-    user: session?.user ?? null,
-    isAuthenticated: !!session,
-    logout,
-    loading
-  };
+  const logout = useCallback(() => {
+    localStorage.removeItem("isAdmin");
+    dispatch({ type: ActionTypes.LOGOUT });
+  }, []);
 
   return (
-    <AdminContext.Provider value={value}>
-      {loading ? (
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="w-8 h-8 border-4 border-gold-primary border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      ) : (
-        children
-      )}
+    <AdminContext.Provider
+      value={{
+        isAuthenticated: state.isAuthenticated,
+        error: state.error,
+        login,
+        logout,
+      }}
+    >
+      {children}
     </AdminContext.Provider>
   );
 };

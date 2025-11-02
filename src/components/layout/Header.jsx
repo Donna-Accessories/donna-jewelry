@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import routes from "../../utils/routes";
 
 const Header = () => {
@@ -14,103 +15,86 @@ const Header = () => {
   ];
 
   return (
-    <header className="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4">
-        {/* Logo + Navigation */}
-        <div className="flex items-center justify-between">
-          {/* Brand Logo (left) */}
-          <div className="flex items-center flex-shrink-0">
-            <div className="mr-3">
-              <div className="inline-flex items-center justify-center w-12 h-12 bg-yellow-400 rounded-full">
-                <svg className="w-6 h-6 text-blue-900" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2L15 8l6 .5-4.5 3 1.5 6L12 15l-6 3 1.5-6L3 8.5 9 8 12 2z" />
-                </svg>
-              </div>
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-yellow-400">DONNA</h1>
-              <p className="text-xs text-yellow-300 tracking-wide">JEWELLERY & ACCESSORIES</p>
-            </div>
-          </div>
+    <header className="bg-blue-900 text-white sticky top-0 z-50 shadow-md">
+      <div className="flex justify-between items-center px-4 py-4 md:px-8">
+        {/* Logo */}
+        <h1 className="text-2xl font-bold text-yellow-400 tracking-wide">
+          DONNA
+        </h1>
 
-          {/* Navigation Menu (center on desktop) */}
-          <nav className="hidden md:flex space-x-8 flex-1 justify-center" role="navigation" aria-label="Main">
-            {navLinks.map((link) => (
+        {/* Desktop Nav */}
+        <nav
+          className="hidden md:flex space-x-8"
+          role="navigation"
+          aria-label="Main"
+        >
+          {navLinks.map((link) => (
+            <Link
+              key={link.name}
+              to={link.to}
+              className={`relative group transition-colors duration-300 ${
+                location.pathname === link.to
+                  ? "text-yellow-400"
+                  : "text-white hover:text-yellow-300"
+              }`}
+            >
+              {link.name}
+              <span
+                className={`absolute left-0 -bottom-1 h-0.5 bg-yellow-400 transition-all duration-300 ${
+                  location.pathname === link.to
+                    ? "w-full"
+                    : "w-0 group-hover:w-full"
+                }`}
+              />
+            </Link>
+          ))}
+        </nav>
+
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label="Toggle menu"
+          aria-expanded={mobileOpen}
+          className="md:hidden text-yellow-400 focus:outline-none"
+        >
+          {mobileOpen ? (
+            <XMarkIcon className="w-7 h-7" />
+          ) : (
+            <Bars3Icon className="w-7 h-7" />
+          )}
+        </button>
+      </div>
+
+      {/* Mobile Dropdown Menu */}
+      {mobileOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+          className="absolute left-0 right-0 bg-blue-900 border-t border-blue-800 flex flex-col items-center space-y-5 py-5 md:hidden rounded-b-2xl shadow-lg"
+        >
+          {navLinks.map((link, i) => (
+            <motion.div
+              key={link.name}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 * i }}
+            >
               <Link
-                key={link.name}
                 to={link.to}
                 onClick={() => setMobileOpen(false)}
-                className={`relative group transition-colors duration-300 px-2 py-1 ${
-                  location.pathname === link.to ? 'text-yellow-400' : 'text-white'
+                className={`block text-base tracking-wide transition-all duration-200 ${
+                  location.pathname === link.to
+                    ? "text-yellow-400"
+                    : "text-white hover:text-yellow-300"
                 }`}
               >
                 {link.name}
-                <span className={`absolute left-0 -bottom-1 h-0.5 bg-yellow-400 transition-all duration-300 ${
-                  location.pathname === link.to ? 'w-full' : 'w-0 group-hover:w-full'
-                }`} />
               </Link>
-            ))}
-          </nav>
-
-          {/* Contact Info (right) */}
-          <div className="hidden lg:block text-right">
-            <p className="text-sm text-yellow-300">Contact us:</p>
-            <p className="text-yellow-400 font-semibold">+233 24 862 8880</p>
-            <p className="text-sm text-yellow-300">@donna_accessoriess</p>
-          </div>
-
-          {/* Mobile Menu Button (right) */}
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden text-yellow-400 focus:outline-none"
-            aria-label="Toggle menu"
-            aria-expanded={mobileOpen}
-          >
-            {mobileOpen ? (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            ) : (
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            )}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {mobileOpen && (
-          <motion.nav
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.22 }}
-            className="md:hidden mt-4 pt-4 border-t border-blue-800"
-            role="navigation"
-            aria-label="Mobile"
-          >
-            <div className="flex flex-col space-y-3 px-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  to={link.to}
-                  onClick={() => setMobileOpen(false)}
-                  className={`block w-full px-3 py-2 rounded text-white hover:text-yellow-400 transition-colors duration-200 ${
-                    location.pathname === link.to ? 'bg-blue-800' : ''
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
-
-              <div className="pt-3 border-t border-blue-800 text-yellow-300">
-                <p className="text-sm">Contact us:</p>
-                <p className="text-yellow-400 font-semibold">+233 24 862 8880</p>
-                <p className="text-sm">@donna_accessoriess</p>
-              </div>
-            </div>
-          </motion.nav>
-        )}
-      </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
     </header>
   );
 };
