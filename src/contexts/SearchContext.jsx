@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useCallback, useMemo } from "react";
 
 // Named export, so hooks can import { SearchContext }
 export const SearchContext = createContext();
@@ -9,8 +9,7 @@ export const SearchProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Search handler with error handling + loading state
-  const handleSearch = (term, products = []) => {
+  const handleSearch = useCallback((term, products = []) => {
     setLoading(true);
     setError(null);
     setSearchTerm(term);
@@ -40,10 +39,9 @@ export const SearchProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // Filter products helper function
-  const filterProducts = (products, term) => {
+  const filterProducts = useCallback((products, term) => {
     if (!term) return products;
     const lower = term.toLowerCase();
     return products.filter(
@@ -51,23 +49,26 @@ export const SearchProvider = ({ children }) => {
         p.title?.toLowerCase().includes(lower) ||
         p.description?.toLowerCase().includes(lower) ||
         p.category?.toLowerCase().includes(lower) ||
-        p.tags?.some(tag => tag.toLowerCase().includes(lower))
+        p.tags?.some((tag) => tag.toLowerCase().includes(lower))
     );
-  };
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({
+      searchTerm,
+      setSearchTerm,
+      results,
+      filterProducts,
+      setResults,
+      handleSearch,
+      error,
+      loading,
+    }),
+    [searchTerm, results, error, loading, filterProducts, handleSearch]
+  );
 
   return (
-    <SearchContext.Provider
-      value={{
-        searchTerm,
-        setSearchTerm,
-        results,
-        filterProducts,
-        setResults,
-        handleSearch,
-        error,
-        loading,
-      }}
-    >
+    <SearchContext.Provider value={contextValue}>
       {children}
     </SearchContext.Provider>
   );

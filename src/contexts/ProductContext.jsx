@@ -1,6 +1,6 @@
 // src/contexts/ProductContext.jsx
-import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
-import { fetchProductsFromGitHub, updateProductsOnGitHub } from '../utils/github-api.js';
+import React, { createContext, useContext, useReducer, useEffect, useCallback, useMemo } from 'react';
+import { fetchProductsFromSupabase, updateProductsInSupabase } from '../utils/supabaseClient';
 
 // Initial state
 const initialState = {
@@ -104,43 +104,30 @@ export const useProductContext = () => {
 };
 
 // Provider
-const ProductProvider = ({ children }) => {
+export const ProductProvider = ({ children }) => {
   const [state, dispatch] = useReducer(productReducer, initialState);
 
   const isCacheValid = useCallback(() => {
     const { cache } = state;
-    return cache.products && cache.timestamp && Date.now() - cache.timestamp < cache.t }, [state.cache]);
+    return cache.products && cache.timestamp && Date.now() - cache.timestamp < cache.ttl;
+  }, [state.cache]);
 
   const fetchProducts = useCallback(async (forceRefresh = false) => {
     if (!forceRefresh && isCacheValid()) return;
 
     dispatch({ type: ActionTypes.FETCH_START });
     try {
-      const data = await fetchProductsFromGitHub();
-      const categories = [
-        ...new Set(data.products?.map(p => p.category?.toLowerCase()).filter(Boolean))
-      ].sort();
-
-      dispatch({
-        type: ActionTypes.FETCH_SUCCESS,
-        payload: { products: data.products || [], categories }
-      });
-    } catch (err) {
-      dispatch({ type: ActionTypes.FETCH_ERROR, payload: err.message || 'Failed to load products' });
+      const data = await fetchProductsFromSupabase();
+      const categories = [...new Set(data.map(product => product.category))];
+      dispatch({ type: ActionTypes.FETCH_SUCCESS, payload: { products: data, categories } });
+    } catch (error) {
+      dispatch({ type: ActionTypes.FETCH_ERROR, payload: error.message });
     }
   }, [isCacheValid]);
 
-  const addProduct = useCallback(async (productData) => {
-    const newProduct = {
-      ...productData,
-      id: `product_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
-      dateAdded: new Date().toISOString(),
-      inStock: productData.inStock ?? true,
-      featured: productData.featured ?? false
-    };
-
+  const addProduct = useCallback(async (newProduct) => {
     dispatch({ type: ActionTypes.ADD_PRODUCT, payload: newProduct });
-    await updateProductsOnGitHub([...state.products, newProduct]);
+    await updateProductsInSupabase([...state.products, newProduct]);
     return newProduct;
   }, [state.products]);
 
@@ -149,12 +136,12 @@ const ProductProvider = ({ children }) => {
     const updatedProducts = state.products.map(p =>
       p.id === id ? { ...p, ...updates, lastModified: new Date().toISOString() } : p
     );
-    await updateProductsOnGitHub(updatedProducts);
+    await updateProductsInSupabase(updatedProducts);
   }, [state.products]);
 
   const deleteProduct = useCallback(async (id) => {
     dispatch({ type: ActionTypes.DELETE_PRODUCT, payload: id });
-    await updateProductsOnGitHub(state.products.filter(p => p.id !== id));
+    await updateProductsInSupabase(state.products.filter(p => p.id !== id));
   }, [state.products]);
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
@@ -166,7 +153,7 @@ const ProductProvider = ({ children }) => {
     return () => clearInterval(interval);
   }, [fetchProducts, state.products.length]);
 
-  const contextValue = {
+  const contextValue = useMemo(() => ({
     ...state,
     fetchProducts,
     addProduct,
@@ -193,11 +180,7 @@ const ProductProvider = ({ children }) => {
     clearError: () => dispatch({ type: ActionTypes.CLEAR_ERROR }),
     isCacheValid: isCacheValid(),
     cacheTimestamp: state.cache.timestamp
-  };
+  }), [state, fetchProducts, addProduct, updateProduct, deleteProduct, isCacheValid]);
 
   return <ProductContext.Provider value={contextValue}>{children}</ProductContext.Provider>;
 };
-
-// Export both named and default
-export { ProductProvider };
-export default ProductProvider;

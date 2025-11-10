@@ -1,5 +1,6 @@
 import React from 'react';
 
+// Temporary comment to force a refresh
 const LoadingSpinner = ({ id = 'loading-spinner', className = '' }) => (
 	<div
 		id={id}

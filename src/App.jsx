@@ -1,6 +1,7 @@
 // src/App.jsx
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import ScrollToTop from './components/layout/ScrollToTop';
 
 // Layout
 import Layout from './components/layout/Layout.jsx';
@@ -84,6 +85,7 @@ const App = () => {
         <ProductProvider>
           <SearchProvider>
             <Router>
+              <ScrollToTop />
               <Layout>
                 <Suspense
                   fallback={

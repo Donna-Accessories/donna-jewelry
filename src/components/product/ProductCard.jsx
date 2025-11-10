@@ -9,15 +9,17 @@ export default function ProductCard({ product }) {
     <motion.article
       whileHover={{ y: -6, scale: 1.02 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className="bg-white rounded-2xl shadow hover:shadow-lg transition-shadow duration-300"
+      className="bg-white rounded-2xl shadow hover:shadow-lg transition-shadow duration-300 overflow-hidden"
     >
-  <Link to={routes.productDetail(product.id)} className="block">
+      <Link to={routes.productDetail(product.id)} className="block">
         {/* Product Image */}
-        <ProductImage
-          src={product.image}
-          alt={product.title}
-          className="h-56"
-        />
+        <div className="aspect-w-1 aspect-h-1">
+          <ProductImage
+            src={product.image}
+            alt={product.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
 
         {/* Details */}
         <div className="p-4">
