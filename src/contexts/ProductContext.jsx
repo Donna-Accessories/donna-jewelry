@@ -1,6 +1,11 @@
 // src/contexts/ProductContext.jsx
 import React, { createContext, useContext, useReducer, useEffect, useCallback, useMemo } from 'react';
-import { fetchProductsFromSupabase, updateProductsInSupabase } from '../utils/supabaseClient';
+import { 
+  fetchProductsFromSupabase, 
+  addProductToSupabase,
+  updateProductInSupabase,
+  deleteProductFromSupabase
+} from '../utils/supabaseClient';
 
 // Initial state
 const initialState = {
@@ -64,7 +69,7 @@ function productReducer(state, action) {
     case ActionTypes.UPDATE_PRODUCT: {
       const { id, updates } = action.payload;
       const updatedProducts = state.products.map(p =>
-        p.id === id ? { ...p, ...updates, lastModified: new Date().toISOString() } : p
+        p.id === id ? { ...p, ...updates, last_modified: new Date().toISOString() } : p
       );
       return {
         ...state,
@@ -126,23 +131,20 @@ export const ProductProvider = ({ children }) => {
   }, [isCacheValid]);
 
   const addProduct = useCallback(async (newProduct) => {
-    dispatch({ type: ActionTypes.ADD_PRODUCT, payload: newProduct });
-    await updateProductsInSupabase([...state.products, newProduct]);
-    return newProduct;
-  }, [state.products]);
+    const addedProduct = await addProductToSupabase(newProduct);
+    dispatch({ type: ActionTypes.ADD_PRODUCT, payload: addedProduct });
+    return addedProduct;
+  }, []);
 
   const updateProduct = useCallback(async (id, updates) => {
-    dispatch({ type: ActionTypes.UPDATE_PRODUCT, payload: { id, updates } });
-    const updatedProducts = state.products.map(p =>
-      p.id === id ? { ...p, ...updates, lastModified: new Date().toISOString() } : p
-    );
-    await updateProductsInSupabase(updatedProducts);
-  }, [state.products]);
+    const updatedProduct = await updateProductInSupabase(id, updates);
+    dispatch({ type: ActionTypes.UPDATE_PRODUCT, payload: { id, updates: updatedProduct } });
+  }, []);
 
   const deleteProduct = useCallback(async (id) => {
+    await deleteProductFromSupabase(id);
     dispatch({ type: ActionTypes.DELETE_PRODUCT, payload: id });
-    await updateProductsInSupabase(state.products.filter(p => p.id !== id));
-  }, [state.products]);
+  }, []);
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);
 

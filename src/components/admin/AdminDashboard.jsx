@@ -7,7 +7,7 @@ import LoadingSpinner from '../ui/LoadingSpinner';
 
 const AdminDashboard = () => {
   const { isAuthenticated, logout, user } = useAdminContext();
-  const { products, categories, loading: productsLoading, refresh } = useProducts();
+  const { products, categories, loading: productsLoading, refresh, deleteProduct } = useProducts();
   const [editingProduct, setEditingProduct] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [error, setError] = useState(null);
@@ -117,7 +117,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* Product Table */}
-          <ProductTable products={products} onEdit={handleEditClick} />
+          <ProductTable products={products} onEdit={handleEditClick} onDelete={deleteProduct} />
         </div>
       )}
     </div>

@@ -337,26 +337,15 @@ const Products = () => {
 
             {/* Quick Stats */}
             {!loading && !error && products?.length > 0 && (
-              <div className="mt-12 bg-white rounded-lg border border-gray-200 p-6">
+              <div className="mt-4 bg-white rounded-lg border border-gray-200 p-2">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
                   <div>
-                    <div className="text-3xl font-bold text-gold-primary mb-2">
+                    <div className="text-xl font-bold text-gold-primary mb-2">
                       {products.length}
                     </div>
                     <div className="text-gray-600">Total Pieces</div>
                   </div>
-                  <div>
-                    <div className="text-3xl font-bold text-gold-primary mb-2">
-                      {categories?.length || 0}
-                    </div>
-                    <div className="text-gray-600">Categories</div>
-                  </div>
-                  <div>
-                    <div className="text-3xl font-bold text-gold-primary mb-2">
-                      {products.filter(p => p.inStock).length}
-                    </div>
-                    <div className="text-gray-600">In Stock</div>
-                  </div>
+
                 </div>
               </div>
             )}
